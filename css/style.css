@@ -202,6 +202,9 @@ select { font: inherit; color: var(--text); background: var(--surface-2); border
 #np-pair-row[hidden], #f-suggest-wrap[hidden], #np-type-wrap[hidden], #np-parts-wrap[hidden], #f-done-wrap[hidden] { display: none; }
 .totals { line-height: 1.4; }
 
+/* test copy (…/dev/): visible stripe so it's never mixed up with the real app */
+body.channel-dev::before { content: "TEST"; position: fixed; top: env(safe-area-inset-top); left: 50%; transform: translateX(-50%); background: #E07B00; color: #fff; font-size: 11px; font-weight: 700; letter-spacing: .1em; padding: 2px 10px; border-radius: 0 0 8px 8px; z-index: 20; }
+
 /* toast */
 .toast {
   position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom) + 20px);

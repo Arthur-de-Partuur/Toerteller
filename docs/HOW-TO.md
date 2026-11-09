@@ -10,8 +10,9 @@
 6. [Backup and moving to a new phone](#backup-and-moving-to-a-new-phone)
 7. [Updates](#updates)
 8. [Giving someone access](#giving-someone-access)
-9. [Publishing a new version](#publishing-a-new-version)
-10. [Files in this repository](#files-in-this-repository)
+9. [Testing a new version](#testing-a-new-version)
+10. [Publishing a new version](#publishing-a-new-version)
+11. [Files in this repository](#files-in-this-repository)
 
 ## Installing on the iPhone
 
@@ -74,7 +75,8 @@ Every part has its own counter, goal, pattern repeat, timer, statistics and note
 
 * Tap the **big counter** after finishing a row. It adds 1.
 * A second tap within 0.7 seconds is ignored, so a double tap doesn't count twice.
-* **− Undo** takes one row off.
+* **− Undo** takes one row off (e.g. after an accidental tap). The row clock continues with the time of that row,
+  as if you never tapped. The total knitting time doesn't change; the undone row is removed from the average.
 * **Notes**: anything you want to remember (needle size, tricky stitches). Saved as you type.
 
 ## The timer and statistics
@@ -118,8 +120,8 @@ Projects are stored only on this phone, inside the app.
 
 ## Updates
 
-Toerteller updates itself. It checks for a new version when it starts, when you come back to it and every 30
-minutes. A new version is installed in the background, and the app restarts itself at a quiet moment: never while the
+Toerteller updates itself. The phone checks for a new version when you open the app (a tiny file), and Toerteller
+checks again at most once a day while it stays open. A new version is installed in the background, and the app restarts itself at a quiet moment: never while the
 row timer is running in the counter screen (it waits until you pause or go back to the project list). Afterwards it
 shows *Updated to version …*. Your projects are kept.
 
@@ -134,14 +136,31 @@ The app is on a public link, so technically anyone with the link can open it. Th
 only people with the owner's written permission may use it. To give someone access, send them the link and your
 permission (e.g. by message).
 
+## Testing a new version
+
+Unpublished work lives on the `dev` branch and is online as a separate **test copy**:
+<https://arthur-de-partuur.github.io/Toerteller/dev/>
+
+* It shows an orange **TEST** label and installs as **Toerteller TEST**, next to the real app.
+* It keeps **its own projects**, so testing never touches the real data (backups can be restored in either).
+* The things to check on a real phone are in [TESTING.md](TESTING.md).
+
 ## Publishing a new version
 
-For the maintainer:
+For the maintainer. The website is built from two branches into the `gh-pages` branch, which GitHub Pages serves
+(Settings → Pages → *Deploy from a branch* → `gh-pages` / root):
 
-1. Collect changes in `CHANGELOG.md` under **Unreleased**.
-2. When publishing: set the new number and date in `js/version.js` (this also refreshes the offline copy on every
-   phone), rename **Unreleased** to that version in the changelog, and update this guide and the README.
-3. Push to `main`. GitHub Pages publishes it within a minute or two.
+* `main` → the live app at `/Toerteller/`
+* `dev` → the test copy at `/Toerteller/dev/`
+
+Steps:
+
+1. Work on `dev`; collect changes in `CHANGELOG.md` under **Unreleased**; the version in `js/version.js` is
+   `X.Y.Z-dev` with date `unreleased`.
+2. After pushing `dev`: run `tools/build-pages.sh` and push `gh-pages` so the test copy is updated.
+3. To publish: set the number and date in `js/version.js` (this also makes every installed copy update itself),
+   rename **Unreleased** in the changelog, update the README and this guide, merge `dev` into `main`, run
+   `tools/build-pages.sh` and push `gh-pages`.
 4. Optionally create a GitHub Release with tag `vX.Y.Z-alpha`.
 
 ## Files in this repository
@@ -155,5 +174,8 @@ For the maintainer:
 | `js/i18n.js` | All texts in Dutch and English. |
 | `js/templates.js` | Project types and their usual parts (Dutch and English). |
 | `js/version.js` | Version number and date. |
+| `js/channel.js` | Live app or test copy (rewritten by `tools/build-pages.sh` for `/dev/`). |
+| `tools/build-pages.sh` | Builds the website (live + test copy) into the `gh-pages` branch. |
+| `docs/TESTING.md` | What to check on a real phone. |
 | `sw.js`, `manifest.webmanifest` | Offline working and Home Screen installation. |
 | `icons/` | App icon. |

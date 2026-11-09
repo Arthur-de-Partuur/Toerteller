@@ -166,7 +166,7 @@
     const ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     const android = /Android/i.test(navigator.userAgent);
     const ih = $('#install-hint');
-    if ((ios || android) && !standalone && !localStorage.getItem('toerteller.hideInstall')) {
+    if ((ios || android) && !standalone && !localStorage.getItem(self.TT_CHANNEL.prefix + 'hideInstall')) {
       ih.innerHTML = '<span>' + t(ios ? 'installHint' : 'installHintAndroid') + '</span>';
       if (installPrompt) {
         const ib = document.createElement('button'); ib.className = 'btn btn-small'; ib.textContent = t('install');
@@ -174,7 +174,7 @@
         ih.append(ib);
       }
       const x = document.createElement('button'); x.className = 'btn btn-small'; x.textContent = t('dismiss');
-      x.onclick = () => { localStorage.setItem('toerteller.hideInstall', '1'); ih.hidden = true; };
+      x.onclick = () => { localStorage.setItem(self.TT_CHANNEL.prefix + 'hideInstall', '1'); ih.hidden = true; };
       ih.append(x); ih.hidden = false;
     } else ih.hidden = true;
 
@@ -354,7 +354,9 @@
   function minus() {
     const x = cp(); if (!x || x.count === 0) return;
     x.count -= 1;
-    if (x.log.length) x.log.pop();
+    // The undone row continues: its time goes back onto the row clock. The total time stays the same.
+    const last = x.log.length ? x.log.pop() : null;
+    if (last && last.d) x.timer.acc += last.d;
     S.touch(cproj());
     toast(t('removed', { n: x.count }));
     renderProject();
@@ -609,11 +611,18 @@
   window.addEventListener('pagehide', pauseAll);
 
   // ---------- offline / updates ----------
-  // Checks on start, whenever the app comes back to the front, and every 30 minutes.
+  // The browser itself checks sw.js when the app is opened; on top of that we check at most once a day.
   // A new version installs in the background; the app reloads itself at a quiet moment
   // (not while the row timer is running in the counter screen). Projects are never touched.
   let swReg = null, updatePending = false;
-  const UPDATE_EVERY_MS = 30 * 60000;
+  const UPDATE_EVERY_MS = 24 * 3600000;   // at most once a day while the app is open
+  const LAST_CHECK = self.TT_CHANNEL.prefix + 'lastUpdateCheck';
+  function dailyCheck() {
+    let last = 0; try { last = +localStorage.getItem(LAST_CHECK) || 0; } catch (e) { /* ignore */ }
+    if (Date.now() - last < UPDATE_EVERY_MS) return;
+    try { localStorage.setItem(LAST_CHECK, String(Date.now())); } catch (e) { /* ignore */ }
+    checkForUpdate();
+  }
   function quietMoment() { const x = cp(); return !(x && x.timer.running); }
   function applyUpdate() {
     if (!updatePending) return;
@@ -625,13 +634,14 @@
     const hadController = !!navigator.serviceWorker.controller;
     navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(reg => {
       swReg = reg;
-      setInterval(() => { if (!document.hidden) checkForUpdate(); }, UPDATE_EVERY_MS);
+      dailyCheck();
+      setInterval(() => { if (!document.hidden) dailyCheck(); }, 3600000);
     }).catch(() => {});
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       if (!hadController) return;           // first install, nothing to update
       updatePending = true; applyUpdate();
     });
-    document.addEventListener('visibilitychange', () => { if (!document.hidden) { checkForUpdate(); if (updatePending) applyUpdate(); } });
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) { dailyCheck(); if (updatePending) applyUpdate(); } });
     window.addEventListener('hashchange', () => { if (updatePending) setTimeout(applyUpdate, 50); });
   }
 
@@ -645,12 +655,13 @@
 
   // Tell the user once after an update.
   try {
-    const seen = localStorage.getItem('toerteller.version');
+    const seen = localStorage.getItem(self.TT_CHANNEL.prefix + 'version');
     if (seen && seen !== self.TT_VERSION.version) setTimeout(() => toast(t('updated', { v: self.TT_VERSION.version })), 400);
-    localStorage.setItem('toerteller.version', self.TT_VERSION.version);
+    localStorage.setItem(self.TT_CHANNEL.prefix + 'version', self.TT_VERSION.version);
   } catch (e) { /* ignore */ }
 
   // ---------- start ----------
+  if (self.TT_CHANNEL.dev) document.body.classList.add('channel-dev');
   applyTheme();
   applyLanguage();
   route();

@@ -22,7 +22,8 @@
 // }
 // Schema 1 (0.1.0: one counter per project) is converted to a project with one part.
 (function () {
-  const KEY = 'toerteller.v1';            // key name kept; the content carries the schema number
+  // Live and test version (…/dev/) share the website's storage, so each uses its own key.
+  const KEY = self.TT_CHANNEL.dev ? 'toerteller-dev.v1' : 'toerteller.v1';   // the content carries the schema number
   const LOG_MAX = 5000;
 
   function defaults() {
