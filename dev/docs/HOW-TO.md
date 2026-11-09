@@ -78,6 +78,10 @@ Every part has its own counter, goal, pattern repeat, timer, statistics and note
     to the project. The part is marked finished and its timer stops. After the last part: *That was the last part!*
   * *No, not finished yet:* **Add rows to the goal…** (type how many), **Just keep counting** (no new goal), or
     **Tapped by accident** (undo).
+* **✓ Part finished** (under the counter): finish a part yourself, e.g. when the pattern says "knit until it measures
+  40 cm". Choose the part to continue with. If the goal isn't reached yet, the app warns you how many rows are
+  missing (with a little joke) and you can still choose *No, I'll knit a bit more*. On a finished part the button
+  reads **↺ Not finished after all** to reopen it.
 * Projects made with version 0.1.0 become a project with one part, *Hoofddeel*, with all counts and times.
 ## Counting rows
 
