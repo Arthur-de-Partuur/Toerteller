@@ -263,3 +263,28 @@ body.channel-dev::before { content: "TEST"; position: fixed; top: env(safe-area-
 body.no-time .timer, body.no-time #btn-timer, body.no-time #p-stats-box, body.no-time #idle-banner { display: none; }
 body.no-time .row-actions { grid-template-columns: 1fr; }
 #idle-card[hidden] { display: none; }
+
+/* Install guide */
+.guide { position: fixed; inset: 0; z-index: 60; background: rgba(30, 15, 22, .45); display: flex; flex-direction: column; padding: 16px; padding-top: max(16px, env(safe-area-inset-top)); }
+.guide[hidden] { display: none; }
+.guide-card { background: var(--surface); color: var(--text); border-radius: 20px; padding: 18px 18px 14px; box-shadow: 0 12px 40px rgba(0,0,0,.25); max-width: 520px; width: 100%; margin: 0 auto; max-height: calc(100% - 90px); overflow: auto; }
+.guide-card h2 { margin: 0 0 12px; font-size: 19px; }
+.guide-steps { margin: 0 0 12px; padding: 0; list-style: none; counter-reset: g; display: grid; gap: 12px; }
+.guide-steps li { counter-increment: g; display: grid; grid-template-columns: 30px 1fr; gap: 10px; align-items: start; font-size: 16px; line-height: 1.45; }
+.guide-steps li::before { content: counter(g); width: 30px; height: 30px; border-radius: 50%; background: var(--primary); color: var(--primary-ink); display: flex; align-items: center; justify-content: center; font-weight: 700; }
+.g-ico { display: inline-flex; vertical-align: -6px; width: 26px; height: 26px; padding: 2px; border-radius: 8px; background: var(--primary-soft); color: var(--primary); margin: 0 2px; }
+.g-ico svg { width: 22px; height: 22px; fill: currentColor; }
+.g-ico svg [fill="none"] { fill: none; }
+.guide-done { margin: 0 0 12px; font-size: 14px; }
+#guide-extra .btn { margin-bottom: 10px; }
+.guide-arrow { position: fixed; bottom: 6px; display: flex; flex-direction: column; align-items: center; color: #fff; font-weight: 700; font-size: 15px; text-shadow: 0 1px 3px rgba(0,0,0,.5); animation: guide-bounce 1s ease-in-out infinite; pointer-events: none; }
+.guide-arrow[hidden] { display: none; }
+.guide-arrow svg { width: 44px; height: 44px; filter: drop-shadow(0 1px 3px rgba(0,0,0,.5)); }
+.guide-arrow.spot-right { right: 10px; }
+.guide-arrow.spot-center { left: 50%; margin-left: -22px; }
+@keyframes guide-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
+@media (prefers-reduced-motion: reduce) { .guide-arrow { animation: none; } }
+.btn-small.btn-primary { background: var(--primary); color: var(--primary-ink); border-color: var(--primary); }
+#install-hint { flex-wrap: wrap; }
+#install-hint span { flex: 1 1 100%; }
+#install-hint .btn-primary { flex: 1; }

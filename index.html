@@ -262,12 +262,28 @@
       <div class="card">
         <h2 data-i18n="help"></h2>
         <p><a href="https://github.com/Arthur-de-Partuur/Toerteller/blob/main/docs/HOW-TO.md" target="_blank" rel="noopener" data-i18n="howTo"></a></p>
+        <p><a href="#" id="btn-guide" data-i18n="guideTitle"></a> · <a href="install.html" data-i18n="ipTitle"></a></p>
       </div>
       <footer class="footer" data-footer></footer>
     </section>
   </div>
 
   <div class="toast" id="toast" role="status" hidden></div>
+
+  <!-- Install guide (add to Home Screen) -->
+  <div id="guide" class="guide" hidden>
+    <div class="guide-card" role="dialog" aria-modal="true" aria-labelledby="guide-title">
+      <h2 id="guide-title" data-i18n="guideTitle"></h2>
+      <ol class="guide-steps" id="guide-steps"></ol>
+      <div id="guide-extra"></div>
+      <p class="muted guide-done" data-i18n="gDone"></p>
+      <button class="btn btn-ghost btn-block" id="guide-close" type="button" data-i18n="dismiss"></button>
+    </div>
+    <div class="guide-arrow" id="guide-arrow" hidden>
+      <span data-i18n="gHere"></span>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v16M5 12l7 7 7-7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+  </div>
 
   <div class="sheet" id="sheet" hidden>
     <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
@@ -286,6 +302,7 @@
   <script src="js/lang/no.js"></script>
   <script src="js/lang/sv.js"></script>
   <script src="js/templates.js"></script>
+  <script src="js/install-guide.js"></script>
   <script src="js/store.js"></script>
   <script src="js/app.js"></script>
 </body>

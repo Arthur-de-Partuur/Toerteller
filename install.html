@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Toerteller installeren</title>
+  <meta name="theme-color" content="#8E3B5F">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .ip { max-width: 760px; margin: 0 auto; padding: 20px 16px 24px; display: flex; flex-direction: column; gap: 16px; min-height: 100vh; }
+    .ip-head { display: flex; align-items: center; gap: 12px; }
+    .ip-head img { width: 52px; height: 52px; border-radius: 12px; }
+    .ip-head h1 { margin: 0; font-size: 24px; }
+    .ip-qr { display: grid; grid-template-columns: 180px 1fr; gap: 18px; align-items: center; }
+    .ip-qr img { width: 180px; height: 180px; border-radius: 12px; background: #fff; border: 1px solid var(--line); }
+    .ip-qr p { margin: 0 0 10px; }
+    .ip-link { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .ip-link code { font-size: 13px; word-break: break-all; background: var(--surface-2); padding: 6px 8px; border-radius: 8px; }
+    .ip-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .ip-cols h2 { margin: 0 0 12px; font-size: 18px; }
+    .ip-cols .card.mine { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-soft); }
+    .ip-note { font-size: 13px; margin: 8px 0 0; }
+    #ip-open { text-decoration: none; }
+    @media (max-width: 620px) {
+      .ip-qr { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+      .ip-link { justify-content: center; }
+      .ip-cols { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="ip">
+    <header class="ip-head">
+      <img src="icons/icon-192.png" alt="">
+      <h1 data-i18n="ipTitle"></h1>
+    </header>
+
+    <div class="card ip-qr">
+      <img id="ip-qr" src="icons/qr-app.svg" alt="QR code">
+      <div>
+        <p data-i18n="ipScan"></p>
+        <p class="muted" data-i18n="ipLink"></p>
+        <div class="ip-link"><code id="ip-url"></code> <button class="btn btn-small" id="ip-copy" type="button" data-i18n="copyLink"></button></div>
+        <p><a class="btn btn-primary" id="ip-open" href="./?install" data-i18n="ipOpen"></a></p>
+      </div>
+    </div>
+
+    <div class="ip-cols">
+      <div class="card" id="ip-iphone">
+        <h2>iPhone</h2>
+        <ol class="guide-steps" id="ip-steps-iphone"></ol>
+        <p class="muted ip-note" id="ip-iphone-old"></p>
+      </div>
+      <div class="card" id="ip-android">
+        <h2>Android</h2>
+        <ol class="guide-steps" id="ip-steps-android"></ol>
+      </div>
+    </div>
+    <p class="muted" data-i18n="gDone"></p>
+
+    <footer class="footer" id="ip-footer"></footer>
+  </main>
+
+  <script src="js/channel.js"></script>
+  <script src="js/version.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/lang/da.js"></script>
+  <script src="js/lang/de.js"></script>
+  <script src="js/lang/no.js"></script>
+  <script src="js/lang/sv.js"></script>
+  <script src="js/install-guide.js"></script>
+  <script>
+  (function () {
+    // Language: the app's own choice on this device if any, otherwise the phone/computer language.
+    let lang = 'en';
+    try {
+      const key = self.TT_CHANNEL.dev ? 'toerteller-dev.v1' : 'toerteller.v1';
+      const pref = JSON.parse(localStorage.getItem(key)).settings.lang;
+      if (self.TT_TEXT[pref]) lang = pref; else throw 0;
+    } catch (e) {
+      const list = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || 'en'];
+      for (const l of list) { let c = String(l).toLowerCase().slice(0, 2); if (c === 'nb' || c === 'nn') c = 'no'; if (self.TT_TEXT[c]) { lang = c; break; } }
+    }
+    const t = (k) => (self.TT_TEXT[lang] && self.TT_TEXT[lang][k]) || self.TT_TEXT.en[k] || k;
+    document.documentElement.lang = lang;
+    document.title = t('ipTitle');
+    document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+
+    const url = new URL('./?install', location.href).href;
+    document.getElementById('ip-url').textContent = url.replace(/\?install$/, '');
+    if (self.TT_CHANNEL.dev) document.getElementById('ip-qr').src = 'icons/qr-app-test.svg';
+    document.getElementById('ip-copy').onclick = (e) => {
+      const b = e.currentTarget, done = () => { b.textContent = t('linkCopied'); };
+      const plain = url.replace(/\?install$/, '');
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(plain).then(done, () => prompt('', plain)); else prompt('', plain);
+    };
+
+    const G = self.TTGuide, pf = G.platform();
+    const fillList = (id, steps) => { const ol = document.getElementById(id); steps.forEach(h => { const li = document.createElement('li'); li.innerHTML = h; ol.append(li); }); };
+    fillList('ip-steps-iphone', G.steps(pf === 'ios' ? 'ios' : 'ios26', t));
+    fillList('ip-steps-android', G.steps('android', t));
+    // Older iPhones (iOS 18 and earlier) have Share directly in the bottom bar.
+    document.getElementById('ip-iphone-old').innerHTML = pf === 'ios' ? '' : 'iOS 18: ' + G.fill(t('gIosOldShare')) + ' → ' + t('gIosAdd').replace(/\{add\}\s*/, '');
+    if (pf.startsWith('ios')) document.getElementById('ip-iphone').classList.add('mine');
+    if (pf === 'android') { const a = document.getElementById('ip-android'); a.classList.add('mine'); a.parentNode.prepend(a); }
+
+    const v = self.TT_VERSION;
+    document.getElementById('ip-footer').textContent = 'Toerteller v' + v.version + ' · ' + t('footerRights');
+  })();
+  </script>
+</body>
+</html>
