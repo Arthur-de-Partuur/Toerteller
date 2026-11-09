@@ -184,12 +184,11 @@
     const android = /Android/i.test(navigator.userAgent);
     const ih = $('#install-hint');
     if ((ios || android) && !standalone && !localStorage.getItem(self.TT_CHANNEL.prefix + 'hideInstall')) {
-      ih.innerHTML = '<span>' + t(ios ? 'installHint' : 'installHintAndroid') + '</span>';
-      if (installPrompt) {
-        const ib = document.createElement('button'); ib.className = 'btn btn-small'; ib.textContent = t('install');
-        ib.onclick = () => { installPrompt.prompt(); installPrompt.userChoice.finally(() => { installPrompt = null; renderHints(); }); };
-        ih.append(ib);
-      }
+      ih.innerHTML = '';
+      const sp = document.createElement('span'); sp.textContent = t('installBanner');
+      const ib = document.createElement('button'); ib.className = 'btn btn-small btn-primary'; ib.textContent = t('showHow');
+      ib.onclick = openGuide;
+      ih.append(sp, ib);
       const x = document.createElement('button'); x.className = 'btn btn-small'; x.textContent = t('dismiss');
       x.onclick = () => { localStorage.setItem(self.TT_CHANNEL.prefix + 'hideInstall', '1'); ih.hidden = true; };
       ih.append(x); ih.hidden = false;
@@ -206,6 +205,35 @@
       bh.append(s, b); bh.hidden = false;
     } else bh.hidden = true;
   }
+
+  // Install guide: which buttons to tap to put the app on the Home Screen
+  function openGuide(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const G = self.TTGuide, pf = G.platform();
+    const ol = $('#guide-steps'); ol.innerHTML = '';
+    const list = G.steps(pf, t);
+    (list.length ? list : G.steps('ios26', t)).forEach(h => { const li = document.createElement('li'); li.innerHTML = h; ol.append(li); });
+    const extra = $('#guide-extra'); extra.innerHTML = '';
+    if (pf === 'android' && installPrompt) {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'btn btn-primary btn-block'; b.textContent = t('install');
+      b.onclick = () => { installPrompt.prompt(); installPrompt.userChoice.finally(() => { installPrompt = null; closeGuide(); renderHints(); }); };
+      extra.append(b);
+    }
+    if (pf === 'ios-other') {
+      const url = location.origin + location.pathname;
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'btn btn-primary btn-block'; b.textContent = t('copyLink');
+      b.onclick = () => {
+        const done = () => toast(t('linkCopied'));
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done, () => prompt('', url));
+        else prompt('', url);
+      };
+      extra.append(b);
+    }
+    const spot = G.arrowSpot(pf), ar = $('#guide-arrow');
+    ar.hidden = !spot; ar.className = 'guide-arrow' + (spot ? ' spot-' + spot : '');
+    $('#guide').hidden = false;
+  }
+  function closeGuide() { $('#guide').hidden = true; }
 
   // Project: list of parts
   let reorderMode = false;
@@ -840,6 +868,9 @@
   window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installPrompt = e; if (!$('#view-home').hidden) renderHints(); });
 
   window.addEventListener('hashchange', route);
+  $('#guide-close').onclick = closeGuide;
+  $('#guide').addEventListener('click', (e) => { if (e.target.id === 'guide') closeGuide(); });
+  $('#btn-guide').onclick = openGuide;
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) { pauseAll(); releaseWake(); }
     else if (cur) { markActivity(); renderProject(); requestWake(); }
@@ -908,4 +939,10 @@
   applyTheme();
   applyLanguage();
   route();
+  // Opened via the install page / QR code (…/?install): show the guide right away, and drop "?install" from the
+  // address so the Home Screen icon opens the normal app.
+  if (/[?&]install\b/.test(location.search)) {
+    history.replaceState(null, '', location.pathname + location.hash);
+    if (!(navigator.standalone || matchMedia('(display-mode: standalone)').matches)) openGuide();
+  }
 })();

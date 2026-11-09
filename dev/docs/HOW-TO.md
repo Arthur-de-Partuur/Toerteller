@@ -18,10 +18,18 @@
 
 1. Open <https://arthur-de-partuur.github.io/Toerteller/> in **Safari** (other browsers on iPhone can't do step 2 as
    well).
-2. Tap the **Share** button (square with an arrow) → **Add to Home Screen** → **Add**.
+2. iOS 26: tap **⋯** at the bottom right (next to the address bar) → **Share** → scroll down → **Add to Home Screen**
+   → leave *Open as Web App* on → **Add**. Older iPhones: tap **Share** (square with an arrow) at the bottom →
+   **Add to Home Screen** → **Add**.
 3. Start Toerteller from the new icon. It opens full screen and works without internet.
 
-Until it is on the Home Screen, the app shows a tip about this (on iPhone and Android). Installing matters: iOS may clear the data of websites
+Until it is on the Home Screen, the app shows a tip with a **Show me how** button: it lists the steps for that phone
+with the real button icons, and on iPhone an arrow points at the button to tap (also in Settings → Help).
+If the link was opened inside WhatsApp or another app, the guide says to open it in Safari and offers **Copy link**.
+
+**Install page:** <https://arthur-de-partuur.github.io/Toerteller/install.html> has a QR code and the steps for iPhone
+and Android. Open it on a computer and let someone scan the code with their phone camera, or send them the link. The
+QR code opens Toerteller with the steps already on screen. Installing matters: iOS may clear the data of websites
 that are not used for a while, but not of apps on the Home Screen.
 
 ## Installing on Android
@@ -190,6 +198,8 @@ Steps:
 | `js/store.js` | Storing projects on the phone; backup format. |
 | `js/i18n.js` | All texts in Dutch and English, plus the jokes. |
 | `js/lang/*.js` | Danish, German, Norwegian and Swedish texts (same keys as `i18n.js`). |
+| `install.html` | Install page with QR code (the QR images are `icons/qr-app.svg` and `icons/qr-app-test.svg`). |
+| `js/install-guide.js` | The *Show me how* install steps per phone (used by the app and the install page). |
 | `js/templates.js` | Project types and their usual parts (all six languages). |
 | `js/version.js` | Version number and date. |
 | `js/channel.js` | Live app or test copy (rewritten by `tools/build-pages.sh` for `/dev/`). |

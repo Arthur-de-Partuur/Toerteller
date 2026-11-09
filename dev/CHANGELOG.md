@@ -5,6 +5,12 @@ published (see [How-To → Publishing a new version](docs/HOW-TO.md#publishing-a
 
 ## Unreleased
 
+* **Easier installing.** The tip on the home screen now has a **Show me how** button with the exact steps for your phone,
+  with the real button icons: iPhone with iOS 26 (⋯ → Share → Add to Home Screen), older iPhones, Android, and a
+  *copy link* for people who opened the link inside WhatsApp or another app (that only works in Safari). On iPhone a
+  bouncing arrow points at the button to tap. Also in Settings → Help.
+* **Install page** `install.html` with a QR code: show it on a computer and scan it with the phone, or send the link.
+  The QR code opens Toerteller with the steps already on screen.
 * **Time tracking can be switched off** (Settings → *Keep track of time*), for knitters who find the clock
   stressful. You are asked to confirm; then the row timer, times, statistics and the *Still knitting?* reminder
   disappear and you just count rows. Times measured before are kept, and switching it on again brings everything back.
