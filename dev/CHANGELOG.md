@@ -1,0 +1,49 @@
+# Changelog
+
+Every change to Toerteller is recorded here. New changes are collected under **Unreleased** until a version is
+published (see [How-To → Publishing a new version](docs/HOW-TO.md#publishing-a-new-version)).
+
+## Unreleased
+
+* **Projects with parts.** A project (e.g. *Trui voor Jan*) now consists of parts (back, front, left sleeve …), each
+  with its own counter, goal, pattern repeat, timer, statistics and notes.
+  * When starting a project, choose what you knit: Sweater, Cardigan, Socks, Hat, Mittens/gloves, Scarf, Shawl,
+    Blanket or Other. The usual parts are listed and ticked; untick what you don't need and add your own parts.
+  * Socks and mittens: *Twice (left and right)* creates every part for both sides.
+  * Later: add a part (with suggestions for the project type or a custom name), copy a part (e.g. for the second
+    sleeve), change the order, mark a part as finished, or delete it.
+  * The project shows how many parts are finished and the total rows and time; the counter shows the whole project
+    too. A message appears when a part reaches its goal.
+  * Existing projects and old backups are converted automatically into a project with one part (*Hoofddeel*), with
+    their count, times and notes.
+* **Still knitting?** If the timer runs and you don't touch the screen for a while (default 5 min), the app flashes,
+  plays a short sound and vibrates (Android) once. Without a response it pauses the timer by itself after another
+  few minutes (default 5) and doesn't count the minutes after the signal. All of this can be set in Settings.
+* Android: install tip on the home screen (with Chrome's own *Install* button when offered) and Android steps in the
+  How-To and README.
+* **Automatic updates.** The app checks for a new version when you open it and at most once a day while it stays open,
+  installs it in the background and restarts itself at a quiet moment (never while the row timer runs). Settings →
+  Updates: switch automatic updating off (you then get a *tap to refresh* message), see the version and **Check for a
+  new version now**. After an update the app says *Updated to version …*.
+* **Undo** now lets the row carry on: the row clock gets back the time of the undone row (it no longer restarts at
+  0:00). The total knitting time never changes on undo.
+* "1 toer / 1 row" instead of "1 toeren / 1 rows".
+* Footer shows *development build, not yet published* until a version is published.
+
+* Test copy of unpublished versions at `/Toerteller/dev/` (orange TEST label, own data), and a phone test
+  checklist (`docs/TESTING.md`).
+
+## 0.1.0-alpha (2026-11-09)
+
+First version.
+
+* Several knitting projects, each with its own row counter (big tap area, protection against accidental double taps).
+* Undo (− button) and manually setting the current row.
+* Goal (number of rows) with progress bar; pattern-repeat counter ("Repeat 3 · row 5 of 8").
+* Timer per row: starts automatically, pauses when you leave the project or the app, and can be paused by hand.
+* Statistics: total knitting time, average and last row time, today's rows and time, estimated time left.
+* Notes per project.
+* Keep the screen on while a project is open.
+* Dutch and English (automatic or chosen); colour scheme Automatic / Light / Dark.
+* Installable on the iPhone Home Screen; works offline.
+* Backup: save all projects as a JSON file and restore it; reminder after 14 days without a backup.
