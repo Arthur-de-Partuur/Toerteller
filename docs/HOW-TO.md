@@ -78,7 +78,7 @@ Every part has its own counter, goal, pattern repeat, timer, statistics and note
     to the project. The part is marked finished and its timer stops. After the last part: *That was the last part!*
   * *No, not finished yet:* **Add rows to the goal…** (type how many), **Just keep counting** (no new goal), or
     **Tapped by accident** (undo).
-* **✓ Part finished** (under the counter): finish a part yourself, e.g. when the pattern says "knit until it measures
+* **✓ Part finished?** (under the counter): finish a part yourself, e.g. when the pattern says "knit until it measures
   40 cm". Choose the part to continue with. If the goal isn't reached yet, the app warns you how many rows are
   missing (with a little joke) and you can still choose *No, I'll knit a bit more*. On a finished part the button
   reads **↺ Not finished after all** to reopen it.
@@ -103,7 +103,8 @@ Every part has its own counter, goal, pattern repeat, timer, statistics and note
   is on). Tap anywhere to continue. If you don't respond, the timer **pauses by itself** after another few minutes
   (default 5), and the minutes after the signal are not counted.
   Rows that take longer than 5 minutes? Set a longer time in Settings.
-* Statistics under the counter:
+* Statistics under the counter, below the header **Time and statistics** (tap the header to fold them away or
+  open them again; the app remembers your choice):
   * **Total knitting time**: all timed time for this project.
   * **Average per row** and **Last row**.
   * **Today**: rows and time since midnight.
@@ -114,7 +115,7 @@ Every part has its own counter, goal, pattern repeat, timer, statistics and note
 
 Gear icon on the home screen.
 
-* **Language**: Automatic (follows the phone; languages the app does not have get English), Nederlands, English, Dansk, Deutsch, Norsk or Svenska. Part names you already created keep the name they were given.
+* **Language**: Automatic (follows the phone; languages the app does not have get English), Dansk, Deutsch, English, Nederlands, Norsk or Svenska (alphabetical). Part names you already created keep the name they were given.
 * **Colours**: Automatic (follows the iPhone's dark mode), Light or Dark.
 * **Keep screen on**: the screen doesn't switch off while a project is open (needs iOS 16.4 or newer).
 * **Still knitting?**: *Signal after* (Off, 2–30 min), *Then pause after* (Never, 1–15 min), and which signals:
