@@ -12,12 +12,16 @@ pattern-repeat counter, notes and a timer per row with total knitting time. Avai
 ## Quick start (iPhone)
 
 1. Open the link above in **Safari**.
-2. Tap **Share** → **Add to Home Screen**. From then on, start Toerteller from its icon.
+2. Tap **⋯** (bottom right) → **Share** → **Add to Home Screen** (older iPhones: **Share** at the bottom). From then on,
+   start Toerteller from its icon.
 3. Tap **+ New project**, enter a name, choose what you knit and tick the parts (or add your own).
 4. Open a part and tap the big counter after every finished row.
 5. Now and then: **Settings → Save backup**, and save the file in iCloud Drive.
 
 On **Android**: open the link in **Chrome**, then **⋮** → **Install app** (or *Add to Home screen*). The rest is the same.
+
+The app shows these steps itself (**Show me how**). To get it onto someone's phone, use the **install page with a QR
+code**: <https://arthur-de-partuur.github.io/Toerteller/install.html>
 
 ## Your data
 
