@@ -11,7 +11,7 @@ self.TT_TEXT.sv = {
   partDone: 'Den här delen är klar', copyPart: 'Gör en kopia (t.ex. till den andra ärmen)', deletePart: 'Radera del',
   partsDone: '{d}/{n} delar klara', finished: 'klar', moveUp: 'Flytta upp', moveDown: 'Flytta ner',
   statProject: 'Hela projektet',
-  finishBtn: '✓ Del klar?', statsTitle: 'Tid och statistik', langSystem: 'Följ systemet (telefon)', reopen: '↺ Inte klar ändå', reopened: '”{name}” är öppen igen',
+  finishBtn: '✓ Del klar?', reorderHint: 'Dra en del i ☰ till dess nya plats.', dragToMove: 'Dra för att flytta', statsTitle: 'Tid och statistik', langSystem: 'Följ systemet (telefon)', reopen: '↺ Inte klar ändå', reopened: '”{name}” är öppen igen',
   rowsMissing: 'Fortfarande {n} av {of} varv kvar', finishAnyway: 'Klar ändå? Fortsätt med:', keepKnitting: 'Nej, jag stickar lite till',
   finishPartTitle: 'Är ”{name}” klar?',
   targetReachedTitle: '🎉 {n} varv uppnådda', targetReachedMsg: 'Är ”{name}” klar?',

@@ -69,7 +69,8 @@ Every part has its own counter, goal, pattern repeat, timer, statistics and note
 * **Edit** a part (pencil in the counter): name, **number of rows (goal)**, **pattern repeat**, **current row**,
   and **This part is finished** (shown with ✓ and a green counter). Here you can also **Make a copy** (same goal,
   repeat and notes, counter at 0; handy for the second sleeve) and **Delete part**.
-* **Change order**: move parts with ↑ ↓, then tap **Done reordering**.
+* **Change order**: tap **Change order**, drag each part by its **☰** handle to its new place, then tap **Done
+  reordering**. Outside this mode the order can't change by accident.
 * **Edit** the project (pencil on the parts screen): rename it or **Delete project**.
 * The goal: shows "of 120", a progress bar and the time left. The pattern repeat: e.g. `8` shows
   *Repeat 3 · row 5 of 8*; the bar turns green on the last row of a repeat. When a part reaches its goal, the app asks
