@@ -36,6 +36,8 @@ published (see [How-To → Publishing a new version](docs/HOW-TO.md#publishing-a
   few seconds.
 * **Number of rows when starting a project:** each part in the list has a *rows* box (optional).
 * Parts without a goal show *no goal*, and the counter shows **＋ Set number of rows**.
+* The version shows its build (e.g. *0.2.0-dev (6b7971a)*), and every new build counts as an update, so the test
+  copy updates too. *Check for a new version now* waits until the new version is installed before restarting.
 * **Undo** now lets the row carry on: the row clock gets back the time of the undone row (it no longer restarts at
   0:00). The total knitting time never changes on undo.
 * "1 toer / 1 row" instead of "1 toeren / 1 rows".

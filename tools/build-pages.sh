@@ -18,6 +18,10 @@ self.TT_CHANNEL = { dev: true, prefix: 'toerteller-dev.' };
 JS
 sed -i 's/"name": "Toerteller"/"name": "Toerteller TEST"/; s/"short_name": "Toerteller"/"short_name": "Toerteller T"/' "$OUT/dev/manifest.webmanifest"
 sed -i 's/<title>Toerteller<\/title>/<title>Toerteller TEST<\/title>/; s/content="Toerteller">/content="Toerteller TEST">/' "$OUT/dev/index.html"
+# stamp each copy with its commit, so installed apps notice every new build
+stamp() { sed -i "s/  build: ''/  build: '$2'/" "$1/js/version.js"; }
+stamp "$OUT" "$(git -C "$ROOT" rev-parse --short origin/main)"
+stamp "$OUT/dev" "$(git -C "$ROOT" rev-parse --short origin/dev)"
 touch "$OUT/.nojekyll"
 # commit to gh-pages (orphan history of build results)
 WT=$(mktemp -d)
