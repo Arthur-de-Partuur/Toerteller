@@ -204,6 +204,36 @@
 
   // Project: list of parts
   let reorderMode = false;
+  // Drag a part by its handle (only in "Change order" mode, so the order can't change by accident).
+  function dragSort(li, handle, list, p) {
+    let startY = 0, active = false;
+    const pageY = (e) => e.clientY + window.scrollY;
+    handle.addEventListener('pointerdown', (e) => {
+      e.preventDefault(); active = true; startY = pageY(e);
+      handle.setPointerCapture(e.pointerId); li.classList.add('dragging'); list.classList.add('drag-active');
+      if (navigator.vibrate) navigator.vibrate(10);
+    });
+    handle.addEventListener('pointermove', (e) => {
+      if (!active) return;
+      if (e.clientY < 70) window.scrollBy(0, -10); else if (e.clientY > window.innerHeight - 70) window.scrollBy(0, 10);
+      const y = pageY(e), mid = (el) => el.getBoundingClientRect().top + window.scrollY + el.offsetHeight / 2;
+      const before = li.offsetTop;
+      const prev = li.previousElementSibling, next = li.nextElementSibling;
+      if (prev && y < mid(prev)) list.insertBefore(li, prev);
+      else if (next && y > mid(next)) list.insertBefore(next, li);
+      startY += li.offsetTop - before;   // keep the part under the finger after it moved in the list
+      li.style.transform = 'translateY(' + (y - startY) + 'px)';
+    });
+    const end = () => {
+      if (!active) return; active = false;
+      li.classList.remove('dragging'); list.classList.remove('drag-active'); li.style.transform = '';
+      const ids = [...list.children].map(el => el.dataset.id);
+      const changed = ids.some((id, k) => p.parts[k].id !== id);
+      if (changed) { p.parts.sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id)); S.touch(p); }
+    };
+    handle.addEventListener('pointerup', end);
+    handle.addEventListener('pointercancel', end);
+  }
   function openParts(p) {
     $('#pp-name').textContent = p.name;
     const tt = projTotals(p), ty = typeOf(p);
@@ -218,21 +248,17 @@
       li.classList.add('part-item'); if (x.done) li.classList.add('is-done');
       if (reorderMode) li.append(c);
       if (reorderMode) {
-        const box = document.createElement('div'); box.className = 'move-btns';
-        [['↑', -1], ['↓', 1]].forEach(([lbl, d]) => {
-          const b = document.createElement('button'); b.className = 'btn btn-small'; b.textContent = lbl;
-          b.setAttribute('aria-label', d < 0 ? t('moveUp') : t('moveDown'));
-          b.disabled = (i + d < 0) || (i + d >= p.parts.length);
-          b.onclick = () => { const a = p.parts; [a[i], a[i + d]] = [a[i + d], a[i]]; S.touch(p); openParts(p); };
-          box.append(b);
-        });
-        li.append(box);
+        li.dataset.id = x.id;
+        const h = document.createElement('div'); h.className = 'drag-handle'; h.setAttribute('aria-label', t('dragToMove'));
+        h.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>';
+        li.append(h); dragSort(li, h, list, p);
       }
       list.append(li);
     });
     $('#btn-reorder').hidden = p.parts.length < 2;
     $('#btn-reorder').textContent = reorderMode ? t('reorderDone') : t('reorder');
     $('#btn-add-part').hidden = reorderMode;
+    $('#reorder-hint').hidden = !reorderMode;
     show('view-parts');
   }
 
