@@ -5,6 +5,8 @@ published (see [How-To → Publishing a new version](docs/HOW-TO.md#publishing-a
 
 ## Unreleased
 
+* Fix: opening *Edit* on a part could put the cursor in *Current row* (with the keyboard open) instead of starting at
+  the top.
 * Settings → Language: the first choice now reads *Follow system (phone)*: the app uses the phone's language; below it you can pick a language
   yourself.
 

@@ -467,7 +467,7 @@
   }
 
   // ---------- new / edit part ----------
-  let editing = null, editProject = null;
+  let editing = null, editProject = null, editGuardUntil = 0, editFocusOk = null;
   function openPartEdit(p, x) {
     editProject = p; editing = x;
     $('#edit-title').textContent = x ? t('editPartTitle') : t('addPartTitle');
@@ -487,6 +487,9 @@
     sug.forEach(nm => { const c = document.createElement('button'); c.type = 'button'; c.className = 'chip'; c.textContent = nm; c.onclick = () => { $('#f-name').value = nm; }; box.append(c); });
     $('#f-suggest-wrap').hidden = !!x || !sug.length;
     show('view-edit');
+    // For a short moment only the field we choose may get the cursor: a stray tap from the previous screen
+    // (e.g. the menu button under your finger) must not land in a field such as "Current row".
+    editGuardUntil = Date.now() + 700; editFocusOk = x ? null : $('#f-name');
     if (!x) setTimeout(() => $('#f-name').focus(), 50);
   }
   function saveEdit(ev) {
@@ -760,13 +763,16 @@
   $('#btn-plus').addEventListener('click', plus);
   $('#btn-minus').onclick = minus;
   $('#btn-finish').onclick = finishButton;
-  $('#p-set-target').onclick = () => { go('#/part/' + cur.pid + '/' + cur.partId); setTimeout(() => $('#f-target').focus(), 80); };
+  $('#p-set-target').onclick = () => { go('#/part/' + cur.pid + '/' + cur.partId); setTimeout(() => { editFocusOk = $('#f-target'); $('#f-target').focus(); }, 80); };
   $('#sheet').addEventListener('click', (e) => {
     if (Date.now() - sheetOpenedAt < 350) return;          // ignore the tap that opened it
     if (e.target.id === 'sheet' || e.target.id === 'sheet-cancel') closeSheet();
   });
   $('#btn-timer').onclick = toggleTimer;
   $('#edit-form').addEventListener('submit', saveEdit);
+  $('#view-edit').addEventListener('focusin', (e) => {
+    if (Date.now() < editGuardUntil && e.target !== editFocusOk && e.target.matches('input, textarea')) { e.target.blur(); window.scrollTo(0, 0); }
+  });
   $('#btn-delete').onclick = deletePart;
   $('#btn-copy-part').onclick = copyPart;
   $('#p-stats-box').addEventListener('toggle', (e) => { if (S.state.settings.statsOpen !== e.target.open) { S.state.settings.statsOpen = e.target.open; S.save(); } });
