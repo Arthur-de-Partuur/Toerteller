@@ -7,7 +7,7 @@
   const BACKUP_NAG_DAYS = 14;
 
   let lang = 'nl';
-  let currentId = null;          // project shown in the counter view
+  let cur = null;                // { pid, partId } shown in the counter view
   let tickTimer = null;
   let wakeLock = null;
   let lastTap = 0;
@@ -64,28 +64,41 @@
     try { return new Date(iso).toLocaleString(lang === 'nl' ? 'nl-NL' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short' }); } catch (e) { return iso; }
   }
 
-  // ---------- timer ----------
-  function rowMs(p) { return p.timer.acc + (p.timer.running ? Date.now() - p.timer.start : 0); }
-  function totalMs(p) { return p.totalMs + (p.timer.running ? Date.now() - p.timer.start : 0); }
-  function pauseTimer(p) {
-    if (!p || !p.timer.running) return;
-    const seg = Math.max(0, Date.now() - p.timer.start);
-    p.timer.acc += seg; p.totalMs += seg; p.timer.running = false; p.timer.start = null;
-    S.touch(p);
+  // ---------- timer (per part) ----------
+  function rowMs(x) { return x.timer.acc + (x.timer.running ? Date.now() - x.timer.start : 0); }
+  function totalMs(x) { return x.totalMs + (x.timer.running ? Date.now() - x.timer.start : 0); }
+  function pauseTimer(x) {
+    if (!x || !x.timer.running) return;
+    const seg = Math.max(0, Date.now() - x.timer.start);
+    x.timer.acc += seg; x.totalMs += seg; x.timer.running = false; x.timer.start = null;
+    S.touch();
   }
-  function startTimer(p) {
-    if (p.timer.running) return;
-    p.timer.running = true; p.timer.start = Date.now(); S.touch(p);
+  function startTimer(x) {
+    if (x.timer.running) return;
+    x.timer.running = true; x.timer.start = Date.now(); S.touch();
   }
-  function pauseAll() { S.state.projects.forEach(pauseTimer); }
+  function pauseAll() { S.allParts().forEach(pauseTimer); }
+
+  // ---------- current project / part ----------
+  function cproj() { return cur ? S.find(cur.pid) : null; }
+  function cp() { return cur ? S.findPart(cur.pid, cur.partId) : null; }
+  function typeOf(p) { return self.TT_TYPES.find(x => x.key === p.type) || self.TT_TYPES[self.TT_TYPES.length - 1]; }
+  function projTotals(p) {
+    const rows = p.parts.reduce((a, x) => a + x.count, 0);
+    const allTarget = p.parts.every(x => x.target);
+    const target = allTarget ? p.parts.reduce((a, x) => a + x.target, 0) : 0;
+    const ms = p.parts.reduce((a, x) => a + totalMs(x), 0);
+    const done = p.parts.filter(x => x.done).length;
+    return { rows, target, ms, done, n: p.parts.length };
+  }
 
   // ---------- stats ----------
-  function stats(p) {
-    const timed = p.log.filter(e => e.d != null);
+  function stats(x) {
+    const timed = x.log.filter(e => e.d != null);
     const avg = timed.length ? timed.reduce((a, e) => a + e.d, 0) / timed.length : null;
-    const last = p.log.length ? p.log[p.log.length - 1].d : null;
+    const last = x.log.length ? x.log[x.log.length - 1].d : null;
     const midnight = new Date(); midnight.setHours(0, 0, 0, 0);
-    const today = p.log.filter(e => e.t >= midnight.getTime());
+    const today = x.log.filter(e => e.t >= midnight.getTime());
     const todayMs = today.reduce((a, e) => a + (e.d || 0), 0);
     return { avg, last, todayRows: today.length, todayMs };
   }
@@ -98,15 +111,34 @@
 
   function route() {
     const h = location.hash.replace(/^#\/?/, '');
-    const [view, id] = h.split('/');
-    if (currentId && !(view === 'p' && id === currentId)) { pauseTimer(S.find(currentId)); stopTick(); releaseWake(); currentId = null; }
-    if (view === 'p' && S.find(id)) return openProject(id);
-    if (view === 'edit' && S.find(id)) return openEdit(S.find(id));
-    if (view === 'new') return openEdit(null);
+    const [view, id, sub] = h.split('/');
+    if (cur && !(view === 'c' && id === cur.pid && sub === cur.partId)) { pauseTimer(cp()); stopTick(); releaseWake(); cur = null; }
+    if (view !== 'p') reorderMode = false;
+    const p = id ? S.find(id) : null;
+    if (view === 'p' && p) return openParts(p);
+    if (view === 'c' && p && S.findPart(id, sub)) return openCounter(id, sub);
+    if (view === 'part' && p && S.findPart(id, sub)) return openPartEdit(p, S.findPart(id, sub));
+    if (view === 'addpart' && p) return openPartEdit(p, null);
+    if (view === 'pedit' && p) return openProjectForm(p);
+    if (view === 'new') return openProjectForm(null);
     if (view === 'settings') return openSettings();
     renderHome(); show('view-home');
   }
   function go(hash) { if (location.hash === hash) route(); else location.hash = hash; }
+
+  function card(href, num, name, meta, frac) {
+    const a = document.createElement(href ? 'a' : 'div'); if (href) a.href = href; a.className = 'project-card';
+    const nEl = document.createElement('span'); nEl.className = 'pc-count'; nEl.textContent = num;
+    const nm = document.createElement('span'); nm.className = 'pc-name'; nm.textContent = name;
+    const mt = document.createElement('span'); mt.className = 'pc-meta'; mt.textContent = meta;
+    a.append(nEl, nm, mt);
+    if (frac != null) {
+      const bar = document.createElement('span'); bar.className = 'pc-bar';
+      const fill = document.createElement('span'); fill.style.width = Math.min(100, frac * 100) + '%';
+      bar.append(fill); a.append(bar);
+    }
+    return a;
+  }
 
   // Home
   function renderHome() {
@@ -114,24 +146,17 @@
     const ps = S.state.projects;
     $('#home-empty').hidden = ps.length > 0;
     ps.forEach(p => {
+      const tt = projTotals(p), ty = typeOf(p);
+      const meta = ty.icon + ' ' + ty[lang] + ' · ' + (tt.n > 1 ? t('partsDone', { d: tt.done, n: tt.n }) + ' · ' : '') + fmtDur(tt.ms);
       const li = document.createElement('li');
-      const a = document.createElement('a'); a.href = '#/p/' + p.id; a.className = 'project-card';
-      const name = document.createElement('span'); name.className = 'pc-name'; name.textContent = p.name;
-      const meta = document.createElement('span'); meta.className = 'pc-meta';
-      meta.textContent = (p.target ? p.count + ' / ' + p.target + ' ' + t('rows') : nRows(p.count)) + ' · ' + fmtDur(p.totalMs);
-      const num = document.createElement('span'); num.className = 'pc-count'; num.textContent = p.count;
-      a.append(num, name, meta);
-      if (p.target) {
-        const bar = document.createElement('span'); bar.className = 'pc-bar';
-        const fill = document.createElement('span'); fill.style.width = Math.min(100, p.count / p.target * 100) + '%';
-        bar.append(fill); a.append(bar);
-      }
-      li.append(a); list.append(li);
+      li.append(card('#/p/' + p.id, tt.rows, p.name, meta, tt.target ? tt.rows / tt.target : null));
+      list.append(li);
     });
     const tot = $('#home-totals');
     if (ps.length) {
       tot.hidden = false;
-      tot.textContent = t('totalsLine', { p: ps.length === 1 ? t('project1') : t('projectN', { n: ps.length }), r: ps.reduce((a, p) => a + p.count, 0), t: fmtDur(ps.reduce((a, p) => a + p.totalMs, 0)) });
+      const parts = S.allParts();
+      tot.textContent = t('totalsLine', { p: ps.length === 1 ? t('project1') : t('projectN', { n: ps.length }), r: parts.reduce((a, x) => a + x.count, 0), t: fmtDur(parts.reduce((a, x) => a + x.totalMs, 0)) });
     } else tot.hidden = true;
     renderHints();
   }
@@ -157,7 +182,7 @@
     const ps = S.state.projects;
     const since = S.state.lastBackup || (ps.length ? ps.reduce((m, p) => (p.created < m ? p.created : m), ps[0].created) : null);
     const days = since ? Math.floor((Date.now() - new Date(since).getTime()) / 86400000) : 0;
-    if (ps.some(p => p.count > 0) && days >= BACKUP_NAG_DAYS) {
+    if (S.allParts().some(x => x.count > 0) && days >= BACKUP_NAG_DAYS) {
       bh.innerHTML = '';
       const s = document.createElement('span'); s.textContent = t('backupNag', { d: days });
       const b = document.createElement('button'); b.className = 'btn btn-small'; b.textContent = t('backupNow'); b.onclick = doExport;
@@ -165,55 +190,91 @@
     } else bh.hidden = true;
   }
 
+  // Project: list of parts
+  let reorderMode = false;
+  function openParts(p) {
+    $('#pp-name').textContent = p.name;
+    const tt = projTotals(p), ty = typeOf(p);
+    $('#pp-totals').textContent = ty.icon + ' ' + ty[lang] + ' · ' + t('partsDone', { d: tt.done, n: tt.n }) + ' · ' + nRows(tt.rows) + ' · ' + fmtDur(tt.ms);
+    const list = $('#part-list'); list.innerHTML = ''; list.classList.toggle('reordering', reorderMode);
+    p.parts.forEach((x, i) => {
+      const li = document.createElement('li'); li.className = 'part-item' + (x.done ? ' is-done' : '');
+      const meta = (x.done ? '✓ ' + t('finished') + ' · ' : '') + (x.target ? x.count + ' / ' + x.target + ' ' + t('rows') : nRows(x.count)) + ' · ' + fmtDur(x.totalMs);
+      const c = card(reorderMode ? null : '#/c/' + p.id + '/' + x.id, x.count, x.name, meta, x.target ? x.count / x.target : null);
+      li.append(c);
+      if (reorderMode) {
+        const box = document.createElement('div'); box.className = 'move-btns';
+        [['↑', -1], ['↓', 1]].forEach(([lbl, d]) => {
+          const b = document.createElement('button'); b.className = 'btn btn-small'; b.textContent = lbl;
+          b.setAttribute('aria-label', d < 0 ? t('moveUp') : t('moveDown'));
+          b.disabled = (i + d < 0) || (i + d >= p.parts.length);
+          b.onclick = () => { const a = p.parts; [a[i], a[i + d]] = [a[i + d], a[i]]; S.touch(p); openParts(p); };
+          box.append(b);
+        });
+        li.append(box);
+      }
+      list.append(li);
+    });
+    $('#btn-reorder').hidden = p.parts.length < 2;
+    $('#btn-reorder').textContent = reorderMode ? t('reorderDone') : t('reorder');
+    $('#btn-add-part').hidden = reorderMode;
+    show('view-parts');
+  }
+
   // Counter
-  function openProject(id) {
-    currentId = id;
-    const p = S.find(id);
-    $('#p-notes').value = p.notes;
+  function openCounter(pid, partId) {
+    cur = { pid, partId };
+    $('#p-notes').value = cp().notes;
     markActivity();
     renderProject(); show('view-project');
     startTick(); requestWake();
   }
 
   function renderProject() {
-    const p = S.find(currentId); if (!p) return;
-    $('#p-name').textContent = p.name;
-    $('#p-count').textContent = p.count;
-    $('#p-target').textContent = p.target ? t('of') + ' ' + p.target : '';
-    $('#p-progress').hidden = !p.target;
-    if (p.target) $('#p-progress-bar').style.width = Math.min(100, p.count / p.target * 100) + '%';
+    const x = cp(), p = cproj(); if (!x) return;
+    $('#p-name').textContent = x.name;
+    $('#p-project').textContent = p.name;
+    $('#p-count').textContent = x.count;
+    $('#p-target').textContent = x.target ? t('of') + ' ' + x.target : '';
+    $('#p-progress').hidden = !x.target;
+    if (x.target) $('#p-progress-bar').style.width = Math.min(100, x.count / x.target * 100) + '%';
     const rep = $('#p-repeat');
-    if (p.repeat && p.count > 0) {
-      const i = ((p.count - 1) % p.repeat) + 1, r = Math.floor((p.count - 1) / p.repeat) + 1;
-      rep.textContent = t('repeatLine', { r, i, n: p.repeat });
-      rep.classList.toggle('repeat-end', i === p.repeat);
+    if (x.repeat && x.count > 0) {
+      const i = ((x.count - 1) % x.repeat) + 1, r = Math.floor((x.count - 1) / x.repeat) + 1;
+      rep.textContent = t('repeatLine', { r, i, n: x.repeat });
+      rep.classList.toggle('repeat-end', i === x.repeat);
       rep.hidden = false;
     } else rep.hidden = true;
-    $('#btn-minus').disabled = p.count === 0;
-    $('#btn-timer').textContent = p.timer.running ? t('pause') : t('start');
-    $('#btn-timer').classList.toggle('is-paused', !p.timer.running);
+    $('#btn-minus').disabled = x.count === 0;
+    $('#btn-timer').textContent = x.timer.running ? t('pause') : t('start');
+    $('#btn-timer').classList.toggle('is-paused', !x.timer.running);
+    $('#btn-plus').classList.toggle('is-done', x.done);
     renderClock();
     renderStats();
   }
 
   function renderClock() {
-    const p = S.find(currentId); if (!p) return;
-    $('#p-timer').textContent = fmtClock(rowMs(p));
-    $('#p-timer').classList.toggle('paused', !p.timer.running);
+    const x = cp(); if (!x) return;
+    $('#p-timer').textContent = fmtClock(rowMs(x));
+    $('#p-timer').classList.toggle('paused', !x.timer.running);
   }
 
   function renderStats() {
-    const p = S.find(currentId); if (!p) return;
-    const st = stats(p);
+    const x = cp(), p = cproj(); if (!x) return;
+    const st = stats(x);
     const rows = [
-      [t('statTotal'), fmtDur(totalMs(p))],
+      [t('statTotal'), fmtDur(totalMs(x))],
       [t('statAvg'), fmtDur(st.avg)],
       [t('statLast'), fmtDur(st.last)],
       [t('statToday'), nRows(st.todayRows) + ' · ' + fmtDur(st.todayMs)]
     ];
-    if (p.target && p.count < p.target) {
-      const left = p.target - p.count;
+    if (x.target && x.count < x.target) {
+      const left = x.target - x.count;
       rows.push([t('statLeft'), st.avg ? t('statLeftVal', { rows: left, time: fmtDur(st.avg * left) }) : nRows(left)]);
+    }
+    if (p.parts.length > 1) {
+      const tt = projTotals(p);
+      rows.push([t('statProject'), nRows(tt.rows) + ' · ' + fmtDur(tt.ms)]);
     }
     const dl = $('#p-stats'); dl.innerHTML = '';
     rows.forEach(([k, v]) => {
@@ -225,6 +286,7 @@
   }
 
   function startTick() { stopTick(); let n = 0; tickTimer = setInterval(() => { renderClock(); checkIdle(); if (++n % 15 === 0) renderStats(); }, 1000); }
+  function stopTick() { if (tickTimer) clearInterval(tickTimer); tickTimer = null; }
 
   // ---------- inactivity reminder and auto-pause ----------
   function markActivity() {
@@ -232,8 +294,8 @@
     if (idleAlertAt) { idleAlertAt = 0; document.body.classList.remove('idle-alert'); $('#idle-banner').hidden = true; }
   }
   function checkIdle() {
-    const p = S.find(currentId); const st = S.state.settings;
-    if (!p || !p.timer.running || !st.idleRemind) return;
+    const x = cp(); const st = S.state.settings;
+    if (!x || !x.timer.running || !st.idleRemind) return;
     const now = Date.now(), remindMs = st.idleRemind * 60000;
     if (!idleAlertAt && now - lastActivity >= remindMs) {
       idleAlertAt = now;
@@ -244,10 +306,9 @@
     }
     if (idleAlertAt && st.idlePause && now - idleAlertAt >= st.idlePause * 60000) {
       // Pause, and don't count the minutes since the reminder went off.
-      const at = idleAlertAt;
-      const seg = Math.max(0, at - p.timer.start);
-      p.timer.acc += seg; p.totalMs += seg; p.timer.running = false; p.timer.start = null;
-      S.touch(p);
+      const seg = Math.max(0, idleAlertAt - x.timer.start);
+      x.timer.acc += seg; x.totalMs += seg; x.timer.running = false; x.timer.start = null;
+      S.touch();
       idleAlertAt = 0; document.body.classList.remove('idle-alert'); $('#idle-banner').hidden = true;
       toast(t('idlePaused'), () => { $('#toast').hidden = true; });
       renderProject();
@@ -271,73 +332,167 @@
       });
     } catch (e) { /* no sound */ }
   }
-  function stopTick() { if (tickTimer) clearInterval(tickTimer); tickTimer = null; }
 
   function plus() {
-    const p = S.find(currentId); if (!p) return;
+    const x = cp(); if (!x) return;
     const now = Date.now();
     if (now - lastTap < TAP_GUARD_MS) return;
     lastTap = now;
     let seg = 0;
-    if (p.timer.running) { seg = Math.max(0, now - p.timer.start); p.totalMs += seg; }
-    const d = p.timer.acc + seg;
-    p.log.push({ t: now, d: d > 0 ? d : null });
-    if (p.log.length > S.LOG_MAX) p.log.shift();
-    p.count += 1;
-    p.timer = { running: true, start: now, acc: 0 };
-    S.touch(p);
+    if (x.timer.running) { seg = Math.max(0, now - x.timer.start); x.totalMs += seg; }
+    const d = x.timer.acc + seg;
+    x.log.push({ t: now, d: d > 0 ? d : null });
+    if (x.log.length > S.LOG_MAX) x.log.shift();
+    x.count += 1;
+    x.timer = { running: true, start: now, acc: 0 };
+    S.touch(cproj());
     const c = $('#btn-plus'); c.classList.remove('bump'); void c.offsetWidth; c.classList.add('bump');
     renderProject();
+    if (x.target && x.count === x.target && !x.done) toast(t('targetReached'));
   }
 
   function minus() {
-    const p = S.find(currentId); if (!p || p.count === 0) return;
-    p.count -= 1;
-    if (p.log.length) p.log.pop();
-    S.touch(p);
-    toast(t('removed', { n: p.count }));
+    const x = cp(); if (!x || x.count === 0) return;
+    x.count -= 1;
+    if (x.log.length) x.log.pop();
+    S.touch(cproj());
+    toast(t('removed', { n: x.count }));
     renderProject();
   }
 
   function toggleTimer() {
-    const p = S.find(currentId); if (!p) return;
-    if (p.timer.running) pauseTimer(p); else startTimer(p);
+    const x = cp(); if (!x) return;
+    if (x.timer.running) pauseTimer(x); else startTimer(x);
     renderProject();
   }
 
-  // Edit / new
-  let editing = null;
-  function openEdit(p) {
-    editing = p;
-    $('#edit-title').textContent = p ? t('editTitle') : t('newTitle');
-    $('#f-name').value = p ? p.name : '';
-    $('#f-target').value = p && p.target ? p.target : '';
-    $('#f-repeat').value = p && p.repeat ? p.repeat : '';
-    $('#f-count').value = p ? p.count : 0;
-    $('#f-count-wrap').hidden = !p;
-    $('#btn-delete').hidden = !p;
+  // ---------- new project / edit project ----------
+  let npEditing = null, npType = 'sweater', npItems = [];   // npItems: [{ name, on }]
+  function openProjectForm(p) {
+    npEditing = p;
+    $('#np-title').textContent = p ? t('editProjectTitle') : t('newTitle');
+    $('#np-name').value = p ? p.name : '';
+    $('#np-type-wrap').hidden = !!p;
+    $('#np-parts-wrap').hidden = !!p;
+    $('#btn-delete-project').hidden = !p;
+    $('#np-submit').textContent = p ? t('save') : t('startProject');
+    if (!p) { selectType('sweater'); setTimeout(() => $('#np-name').focus(), 50); }
+    show('view-newproject');
+  }
+  function renderTypes() {
+    const box = $('#np-types'); box.innerHTML = '';
+    self.TT_TYPES.forEach(ty => {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'type-btn' + (ty.key === npType ? ' active' : '');
+      const i = document.createElement('span'); i.className = 'type-icon'; i.textContent = ty.icon;
+      const l = document.createElement('span'); l.textContent = ty[lang];
+      b.append(i, l); b.onclick = () => selectType(ty.key);
+      box.append(b);
+    });
+  }
+  function selectType(key) {
+    npType = key;
+    const ty = self.TT_TYPES.find(x => x.key === key);
+    const custom = npItems.filter(x => x.custom);
+    npItems = ty.parts.map(x => ({ name: x[lang], on: x.on })).concat(custom);
+    $('#np-pair-row').hidden = !ty.pair;
+    $('#np-pair').checked = !!ty.pair;
+    renderTypes(); renderNpItems();
+  }
+  function renderNpItems() {
+    const ul = $('#np-parts'); ul.innerHTML = '';
+    npItems.forEach((it, i) => {
+      const li = document.createElement('li');
+      const lab = document.createElement('label'); lab.className = 'check-row';
+      const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = it.on; cb.onchange = () => { it.on = cb.checked; };
+      const sp = document.createElement('span'); sp.textContent = it.name;
+      lab.append(cb, sp); li.append(lab);
+      if (it.custom) {
+        const x = document.createElement('button'); x.type = 'button'; x.className = 'btn btn-small remove-btn'; x.textContent = '✕';
+        x.setAttribute('aria-label', t('remove')); x.onclick = () => { npItems.splice(i, 1); renderNpItems(); };
+        li.append(x);
+      }
+      ul.append(li);
+    });
+    $('#np-parts-wrap').querySelector('.help').hidden = false;
+  }
+  function addCustom() {
+    const v = $('#np-custom').value.trim(); if (!v) return;
+    npItems.push({ name: v.slice(0, 60), on: true, custom: true });
+    $('#np-custom').value = ''; renderNpItems(); $('#np-custom').focus();
+  }
+  function saveProjectForm(ev) {
+    ev.preventDefault();
+    const name = $('#np-name').value.trim() || t('newTitle');
+    if (npEditing) { npEditing.name = name; S.touch(npEditing); history.replaceState(null, '', '#/p/' + npEditing.id); return route(); }
+    let names = npItems.filter(x => x.on).map(x => x.name);
+    if ($('#np-pair').checked && !$('#np-pair-row').hidden && names.length) {
+      names = names.map(nm => nm + ' · ' + t('left')).concat(names.map(nm => nm + ' · ' + t('right')));
+    }
+    if (!names.length) names = [S.mainName()];
+    const p = S.newProject({ name, type: npType }, names);
+    npItems = [];
+    history.replaceState(null, '', '#/p/' + p.id); route();
+  }
+  function deleteProject() {
+    if (!npEditing) return;
+    if (!confirm(t('confirmDelete', { name: npEditing.name }))) return;
+    S.remove(npEditing.id); npEditing = null;
+    history.replaceState(null, '', '#/'); route();
+  }
+
+  // ---------- new / edit part ----------
+  let editing = null, editProject = null;
+  function openPartEdit(p, x) {
+    editProject = p; editing = x;
+    $('#edit-title').textContent = x ? t('editPartTitle') : t('addPartTitle');
+    $('#f-name').value = x ? x.name : '';
+    $('#f-target').value = x && x.target ? x.target : '';
+    $('#f-repeat').value = x && x.repeat ? x.repeat : '';
+    $('#f-count').value = x ? x.count : 0;
+    $('#f-done').checked = !!(x && x.done);
+    $('#f-count-wrap').hidden = !x;
+    $('#f-done-wrap').hidden = !x;
+    $('#btn-copy-part').hidden = !x;
+    $('#btn-delete').hidden = !x || p.parts.length < 2;
+    // suggestions: parts of this project type that are not in the project yet
+    const have = new Set(p.parts.map(y => y.name.toLowerCase()));
+    const sug = typeOf(p).parts.map(y => y[lang]).filter(nm => !have.has(nm.toLowerCase()));
+    const box = $('#f-suggest'); box.innerHTML = '';
+    sug.forEach(nm => { const c = document.createElement('button'); c.type = 'button'; c.className = 'chip'; c.textContent = nm; c.onclick = () => { $('#f-name').value = nm; }; box.append(c); });
+    $('#f-suggest-wrap').hidden = !!x || !sug.length;
     show('view-edit');
-    if (!p) setTimeout(() => $('#f-name').focus(), 50);
+    if (!x) setTimeout(() => $('#f-name').focus(), 50);
   }
   function saveEdit(ev) {
     ev.preventDefault();
     const num = (sel) => { const v = parseInt($(sel).value, 10); return Number.isFinite(v) && v > 0 ? v : 0; };
-    const fields = { name: $('#f-name').value.trim() || t('newTitle'), target: num('#f-target'), repeat: num('#f-repeat') };
+    const fields = { name: $('#f-name').value.trim() || S.mainName(), target: num('#f-target'), repeat: num('#f-repeat') };
+    const p = editProject;
     if (editing) {
       Object.assign(editing, fields);
       editing.count = num('#f-count');
-      S.touch(editing);
-      history.replaceState(null, '', '#/p/' + editing.id); route();
+      editing.done = $('#f-done').checked;
+      S.touch(p);
+      history.replaceState(null, '', '#/c/' + p.id + '/' + editing.id); route();
     } else {
-      const p = S.newProject(fields);
+      p.parts.push(S.newPart(fields)); S.touch(p);
       history.replaceState(null, '', '#/p/' + p.id); route();
     }
   }
-  function deleteProject() {
+  function copyPart() {
     if (!editing) return;
-    if (!confirm(t('confirmDelete', { name: editing.name }))) return;
-    S.remove(editing.id); editing = null;
-    history.replaceState(null, '', '#/'); route();
+    const p = editProject;
+    const copy = S.newPart({ name: t('copyOf', { name: editing.name }).slice(0, 60), target: editing.target, repeat: editing.repeat, notes: editing.notes });
+    p.parts.splice(p.parts.indexOf(editing) + 1, 0, copy); S.touch(p);
+    toast(t('copied'));
+    history.replaceState(null, '', '#/part/' + p.id + '/' + copy.id); route();
+  }
+  function deletePart() {
+    if (!editing) return;
+    const p = editProject;
+    if (!confirm(t('confirmDeletePart', { name: editing.name }))) return;
+    p.parts = p.parts.filter(y => y !== editing); S.touch(p); editing = null;
+    history.replaceState(null, '', '#/p/' + p.id); route();
   }
 
   // Settings
@@ -389,7 +544,7 @@
 
   // ---------- keep screen on ----------
   async function requestWake() {
-    if (!S.state.settings.wake || !('wakeLock' in navigator) || document.hidden || !currentId) return;
+    if (!S.state.settings.wake || !('wakeLock' in navigator) || document.hidden || !cur) return;
     try { wakeLock = await navigator.wakeLock.request('screen'); wakeLock.addEventListener('release', () => { wakeLock = null; }); } catch (e) { /* not allowed */ }
   }
   function releaseWake() { if (wakeLock) { wakeLock.release().catch(() => {}); wakeLock = null; } }
@@ -405,19 +560,30 @@
   // ---------- events ----------
   $('#btn-settings').onclick = () => go('#/settings');
   $('#btn-new').onclick = () => go('#/new');
-  $('#btn-back').onclick = () => go('#/');
+  $('#btn-parts-back').onclick = () => go('#/');
+  $('#btn-project-edit').onclick = () => { const id = location.hash.split('/')[2]; go('#/pedit/' + id); };
+  $('#btn-add-part').onclick = () => { const id = location.hash.split('/')[2]; go('#/addpart/' + id); };
+  $('#btn-reorder').onclick = () => { reorderMode = !reorderMode; route(); };
+  $('#btn-back').onclick = () => go('#/p/' + cur.pid);
   $('#btn-settings-back').onclick = () => go('#/');
-  $('#btn-edit').onclick = () => go('#/edit/' + currentId);
-  $('#btn-edit-cancel').onclick = () => { if (editing) go('#/p/' + editing.id); else go('#/'); };
+  $('#btn-edit').onclick = () => go('#/part/' + cur.pid + '/' + cur.partId);
+  $('#btn-edit-cancel').onclick = () => { if (editing) go('#/c/' + editProject.id + '/' + editing.id); else go('#/p/' + editProject.id); };
+  $('#btn-np-cancel').onclick = () => { if (npEditing) go('#/p/' + npEditing.id); else go('#/'); };
+  $('#np-form').addEventListener('submit', saveProjectForm);
+  $('#np-custom-add').onclick = addCustom;
+  $('#np-custom').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); addCustom(); } });
+  $('#btn-delete-project').onclick = deleteProject;
   $('#btn-plus').addEventListener('click', plus);
   $('#btn-minus').onclick = minus;
   $('#btn-timer').onclick = toggleTimer;
   $('#edit-form').addEventListener('submit', saveEdit);
-  $('#btn-delete').onclick = deleteProject;
-  $('#p-notes').addEventListener('input', (e) => { const p = S.find(currentId); if (p) { p.notes = e.target.value; S.touch(p); } });
+  $('#btn-delete').onclick = deletePart;
+  $('#btn-copy-part').onclick = copyPart;
+  $('#p-notes').addEventListener('input', (e) => { const x = cp(); if (x) { x.notes = e.target.value; S.touch(cproj()); } });
   $('#btn-export').onclick = doExport;
   $('#file-import').addEventListener('change', doImport);
   $$('#set-lang button').forEach(b => b.onclick = () => { S.state.settings.lang = b.dataset.value; S.save(); applyLanguage(); openSettings(); });
+  // (part names are stored as typed; changing the language later doesn't rename them)
   $$('#set-theme button').forEach(b => b.onclick = () => { S.state.settings.theme = b.dataset.value; S.save(); applyTheme(); openSettings(); });
   $('#set-wake').onchange = (e) => { S.state.settings.wake = e.target.checked; S.save(); };
   $('#set-autoupdate').onchange = (e) => { S.state.settings.autoUpdate = e.target.checked; S.save(); };
@@ -438,7 +604,7 @@
   window.addEventListener('hashchange', route);
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) { pauseAll(); releaseWake(); }
-    else if (currentId) { markActivity(); renderProject(); requestWake(); }
+    else if (cur) { markActivity(); renderProject(); requestWake(); }
   });
   window.addEventListener('pagehide', pauseAll);
 
@@ -448,7 +614,7 @@
   // (not while the row timer is running in the counter screen). Projects are never touched.
   let swReg = null, updatePending = false;
   const UPDATE_EVERY_MS = 30 * 60000;
-  function quietMoment() { const p = currentId && S.find(currentId); return !(p && p.timer.running); }
+  function quietMoment() { const x = cp(); return !(x && x.timer.running); }
   function applyUpdate() {
     if (!updatePending) return;
     if (S.state.settings.autoUpdate && quietMoment()) { pauseAll(); location.reload(); return; }

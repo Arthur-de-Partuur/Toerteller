@@ -5,6 +5,17 @@ published (see [How-To → Publishing a new version](docs/HOW-TO.md#publishing-a
 
 ## Unreleased
 
+* **Projects with parts.** A project (e.g. *Trui voor Jan*) now consists of parts (back, front, left sleeve …), each
+  with its own counter, goal, pattern repeat, timer, statistics and notes.
+  * When starting a project, choose what you knit: Sweater, Cardigan, Socks, Hat, Mittens/gloves, Scarf, Shawl,
+    Blanket or Other. The usual parts are listed and ticked; untick what you don't need and add your own parts.
+  * Socks and mittens: *Twice (left and right)* creates every part for both sides.
+  * Later: add a part (with suggestions for the project type or a custom name), copy a part (e.g. for the second
+    sleeve), change the order, mark a part as finished, or delete it.
+  * The project shows how many parts are finished and the total rows and time; the counter shows the whole project
+    too. A message appears when a part reaches its goal.
+  * Existing projects and old backups are converted automatically into a project with one part (*Hoofddeel*), with
+    their count, times and notes.
 * **Still knitting?** If the timer runs and you don't touch the screen for a while (default 5 min), the app flashes,
   plays a short sound and vibrates (Android) once. Without a response it pauses the timer by itself after another
   few minutes (default 5) and doesn't count the minutes after the signal. All of this can be set in Settings.

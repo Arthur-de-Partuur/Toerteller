@@ -4,7 +4,7 @@ importScripts('js/version.js');
 const CACHE = 'toerteller-' + self.TT_VERSION.version;
 const FILES = [
   './', 'index.html', 'manifest.webmanifest',
-  'css/style.css', 'js/version.js', 'js/i18n.js', 'js/store.js', 'js/app.js',
+  'css/style.css', 'js/version.js', 'js/i18n.js', 'js/templates.js', 'js/store.js', 'js/app.js',
   'icons/icon.svg', 'icons/apple-touch-icon.png', 'icons/icon-192.png', 'icons/icon-512.png'
 ];
 

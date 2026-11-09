@@ -4,8 +4,8 @@
 
 **A row counter for knitting (breien) on the phone (iPhone and Android). Tap once per finished row (toer).**
 
-Keep several knitting projects, each with its own counter, a goal, a pattern-repeat counter, notes and a timer per
-row with total knitting time. Available in Dutch and English, and it works offline.
+Keep several knitting projects, split into parts (back, front, sleeves …), each part with its own counter, goal,
+pattern-repeat counter, notes and a timer per row with total knitting time. Available in Dutch and English, and it works offline.
 
 **Open the app:** <https://arthur-de-partuur.github.io/Toerteller/>
 
@@ -13,8 +13,8 @@ row with total knitting time. Available in Dutch and English, and it works offli
 
 1. Open the link above in **Safari**.
 2. Tap **Share** → **Add to Home Screen**. From then on, start Toerteller from its icon.
-3. Tap **+ New project**, enter a name (and optionally the number of rows and the pattern repeat).
-4. Tap the big counter after every finished row.
+3. Tap **+ New project**, enter a name, choose what you knit and tick the parts (or add your own).
+4. Open a part and tap the big counter after every finished row.
 5. Now and then: **Settings → Save backup**, and save the file in iCloud Drive.
 
 On **Android**: open the link in **Chrome**, then **⋮** → **Install app** (or *Add to Home screen*). The rest is the same.

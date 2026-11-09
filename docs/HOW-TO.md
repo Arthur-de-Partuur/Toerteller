@@ -32,14 +32,44 @@ that are not used for a while, but not of apps on the Home Screen.
 
 ## Projects
 
-* **+ New project**: enter a name. Optional:
-  * **Number of rows (goal)**: how many rows the pattern has. Shows "of 120", a progress bar and the time left.
-  * **Pattern repeat**: e.g. `8` if the pattern repeats every 8 rows. The app then shows *Repeat 3 · row 5 of 8*;
-    the bar turns green on the last row of a repeat.
-* **Edit** (pencil, top right in a project): change the name, goal and repeat, or set the **current row** by hand
-  (e.g. when you start halfway). Here you can also **delete** the project.
-* The home screen lists all projects with their row count, progress and knitting time.
+A **project** is the thing you make (e.g. *Trui voor Jan*). It consists of **parts** (back, front, left sleeve …).
+Every part has its own counter, goal, pattern repeat, timer, statistics and notes.
 
+### Starting a project
+
+1. On the home screen tap **+ New project** and enter a name.
+2. Choose **what you are knitting**. Each type lists its usual parts:
+
+   | Type | Parts (ticked by default; others can be ticked) |
+   |---|---|
+   | Sweater | Back, Front, Left sleeve, Right sleeve, Neckband (+ Yoke, Collar, Hood, Pockets) |
+   | Cardigan | Back, Left front, Right front, Left sleeve, Right sleeve, Button band (+ Collar, Yoke, Hood, Pockets) |
+   | Socks | Cuff, Leg, Heel flap, Heel turn, Gusset, Foot, Toe |
+   | Hat | Brim, Body, Crown |
+   | Mittens / gloves | Cuff, Hand, Thumb (+ Fingers) |
+   | Scarf | Scarf (+ Border) |
+   | Shawl | Body, Border |
+   | Blanket | Squares / panels, Border |
+   | Other | nothing: add your own |
+
+3. Untick what you don't need. Type your own part in the box below the list and tap **Add** (remove it again with ✕).
+4. Socks and mittens: **Twice (left and right)** creates every part for both sides (*Boord · links* … *Boord · rechts*).
+5. Tap **Start project**. If no part is ticked, the project gets one part (*Hoofddeel*).
+
+### Working with parts
+
+* Tap a project on the home screen to see its parts, with how many are finished and the total rows and time.
+* Tap a part to open its counter.
+* **+ Add part**: tap a suggestion for this type of project, or type your own name. Optional: goal and repeat.
+* **Edit** a part (pencil in the counter): name, **number of rows (goal)**, **pattern repeat**, **current row**,
+  and **This part is finished** (shown with ✓ and a green counter). Here you can also **Make a copy** (same goal,
+  repeat and notes, counter at 0; handy for the second sleeve) and **Delete part**.
+* **Change order**: move parts with ↑ ↓, then tap **Done reordering**.
+* **Edit** the project (pencil on the parts screen): rename it or **Delete project**.
+* The goal: shows "of 120", a progress bar and the time left. The pattern repeat: e.g. `8` shows
+  *Repeat 3 · row 5 of 8*; the bar turns green on the last row of a repeat. When a part reaches its goal, the app says
+  so.
+* Projects made with version 0.1.0 become a project with one part, *Hoofddeel*, with all counts and times.
 ## Counting rows
 
 * Tap the **big counter** after finishing a row. It adds 1.
@@ -123,6 +153,7 @@ For the maintainer:
 | `js/app.js` | Screens, counter, timer, settings, backup. |
 | `js/store.js` | Storing projects on the phone; backup format. |
 | `js/i18n.js` | All texts in Dutch and English. |
+| `js/templates.js` | Project types and their usual parts (Dutch and English). |
 | `js/version.js` | Version number and date. |
 | `sw.js`, `manifest.webmanifest` | Offline working and Home Screen installation. |
 | `icons/` | App icon. |
