@@ -115,7 +115,7 @@ Every part has its own counter, goal, pattern repeat, timer, statistics and note
 
 Gear icon on the home screen.
 
-* **Language**: Automatic (follows the phone; languages the app does not have get English), Dansk, Deutsch, English, Nederlands, Norsk or Svenska (alphabetical). Part names you already created keep the name they were given.
+* **Language**: *Follow system (phone)* uses the phone's language (languages the app does not have get English), or choose one yourself: Dansk, Deutsch, English, Nederlands, Norsk or Svenska (alphabetical). Part names you already created keep the name they were given.
 * **Colours**: Automatic (follows the iPhone's dark mode), Light or Dark.
 * **Keep screen on**: the screen doesn't switch off while a project is open (needs iOS 16.4 or newer).
 * **Still knitting?**: *Signal after* (Off, 2–30 min), *Then pause after* (Never, 1–15 min), and which signals:
