@@ -5,6 +5,10 @@ published (see [How-To → Publishing a new version](docs/HOW-TO.md#publishing-a
 
 ## Unreleased
 
+(nothing yet)
+
+## 0.3.0-alpha (2026-11-09)
+
 * Project screen: **＋ Part** and **⇅ Order** are now small buttons at the top, above the parts (no scrolling down
   in a long list).
 * **Knitted in pieces or in one piece.** *Sweater* now asks **In pieces** or **In the round**, *Cardigan* asks **In pieces**
@@ -26,8 +30,8 @@ published (see [How-To → Publishing a new version](docs/HOW-TO.md#publishing-a
   ↑ ↓ buttons). Outside that mode the order can't change by accident.
 * Fix: opening *Edit* on a part could put the cursor in *Current row* (with the keyboard open) instead of starting at
   the top.
-* Settings → Language: the first choice now reads *Follow system (phone)*: the app uses the phone's language; below it you can pick a language
-  yourself.
+* Settings → Language: the first choice now reads *Follow system (phone)*: the app uses the phone's language; below it
+  you can pick a language yourself.
 
 ## 0.2.0-alpha (2026-11-09)
 

@@ -5,6 +5,7 @@
 //   settings: { lang: 'auto'|'nl'|'en'|'da'|'de'|'no'|'sv', theme: 'auto'|'light'|'dark', wake: bool,
 //               idleRemind: minutes (0 = off), idlePause: minutes after the reminder (0 = never),
 //               idleFlash, idleSound, idleVibrate: bool, autoUpdate: bool,
+//               timeOn: bool (time tracking: row timer, times, statistics, reminder),
 //               statsOpen: bool (time & statistics block on the counter unfolded) },
 //   lastBackup: ISO date | null,
 //   projects: [{
@@ -28,7 +29,7 @@
   const LOG_MAX = 5000;
 
   function defaults() {
-    return { lang: 'auto', theme: 'auto', wake: true, idleRemind: 5, idlePause: 5, idleFlash: true, idleSound: true, idleVibrate: true, autoUpdate: true, statsOpen: true };
+    return { lang: 'auto', theme: 'auto', wake: true, idleRemind: 5, idlePause: 5, idleFlash: true, idleSound: true, idleVibrate: true, autoUpdate: true, statsOpen: true, timeOn: true };
   }
   function empty() {
     return { format: 'toerteller', schema: 2, settings: defaults(), lastBackup: null, projects: [] };

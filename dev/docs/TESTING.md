@@ -32,4 +32,4 @@ publishing. Mark ✅ (works), ❌ (problem, describe it) or – (not tested yet)
 | 25 | Settings → *Keep track of time* off: asks first; then no timer, times or statistics in the counter and lists, no reminder; rows still count; switching on brings it back | – | – |
 | 26 | Not installed: home screen tip → *Show me how* lists the right steps for this phone; on iPhone the arrow points at ⋯ (iOS 26) or Share; following them installs the app | – | – |
 | 27 | Install page (`…/dev/install.html` on a computer): scanning the QR code opens Toerteller with the steps on screen; the Home Screen icon opens the normal app | – | – |
-| 24 | Project → *Change order*: drag a part by ☰ up and down (also past the screen edge in a long list); the page itself can still scroll; order is kept after *Done* | – | – |
+| 24 | Project → *Change order*: drag a part by ☰ up and down (also past the screen edge in a long list); the page itself can still scroll; order is kept after *✓ Done*; *＋ Part* and *⇅ Order* sit at the top | – | – |

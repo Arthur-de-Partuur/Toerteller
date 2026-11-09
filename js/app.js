@@ -90,6 +90,9 @@
     x.timer.running = true; x.timer.start = Date.now(); S.touch();
   }
   function pauseAll() { S.allParts().forEach(pauseTimer); }
+  // Time tracking can be switched off (Settings): then only rows are counted, no clock, times or reminder.
+  function timeOn() { return S.state.settings.timeOn !== false; }
+  const withTime = (ms) => (timeOn() ? ' · ' + fmtDur(ms) : '');
 
   // ---------- current project / part ----------
   function cproj() { return cur ? S.find(cur.pid) : null; }
@@ -159,7 +162,7 @@
     $('#home-empty').hidden = ps.length > 0;
     ps.forEach(p => {
       const tt = projTotals(p), ty = typeOf(p);
-      const meta = ty.icon + ' ' + ty[lang] + ' · ' + (tt.n > 1 ? t('partsDone', { d: tt.done, n: tt.n }) + ' · ' : '') + fmtDur(tt.ms);
+      const meta = ty.icon + ' ' + ty[lang] + (tt.n > 1 ? ' · ' + t('partsDone', { d: tt.done, n: tt.n }) : '') + withTime(tt.ms);
       list.append(listItem(card('#/p/' + p.id, tt.rows, p.name, meta, tt.target ? tt.rows / tt.target : null), {
         title: p.name, onDelete: () => deleteProjectUndo(p), actions: projectActions(p)
       }));
@@ -168,7 +171,9 @@
     if (ps.length) {
       tot.hidden = false;
       const parts = S.allParts();
-      tot.textContent = t('totalsLine', { p: ps.length === 1 ? t('project1') : t('projectN', { n: ps.length }), r: parts.reduce((a, x) => a + x.count, 0), t: fmtDur(parts.reduce((a, x) => a + x.totalMs, 0)) });
+      let line = t('totalsLine', { p: ps.length === 1 ? t('project1') : t('projectN', { n: ps.length }), r: parts.reduce((a, x) => a + x.count, 0), t: fmtDur(parts.reduce((a, x) => a + x.totalMs, 0)) });
+      if (!timeOn()) line = line.split(' · ').slice(0, 2).join(' · ');   // the time is always the last piece
+      tot.textContent = line;
     } else tot.hidden = true;
     renderHints();
   }
@@ -179,12 +184,11 @@
     const android = /Android/i.test(navigator.userAgent);
     const ih = $('#install-hint');
     if ((ios || android) && !standalone && !localStorage.getItem(self.TT_CHANNEL.prefix + 'hideInstall')) {
-      ih.innerHTML = '<span>' + t(ios ? 'installHint' : 'installHintAndroid') + '</span>';
-      if (installPrompt) {
-        const ib = document.createElement('button'); ib.className = 'btn btn-small'; ib.textContent = t('install');
-        ib.onclick = () => { installPrompt.prompt(); installPrompt.userChoice.finally(() => { installPrompt = null; renderHints(); }); };
-        ih.append(ib);
-      }
+      ih.innerHTML = '';
+      const sp = document.createElement('span'); sp.textContent = t('installBanner');
+      const ib = document.createElement('button'); ib.className = 'btn btn-small btn-primary'; ib.textContent = t('showHow');
+      ib.onclick = openGuide;
+      ih.append(sp, ib);
       const x = document.createElement('button'); x.className = 'btn btn-small'; x.textContent = t('dismiss');
       x.onclick = () => { localStorage.setItem(self.TT_CHANNEL.prefix + 'hideInstall', '1'); ih.hidden = true; };
       ih.append(x); ih.hidden = false;
@@ -202,15 +206,74 @@
     } else bh.hidden = true;
   }
 
+  // Install guide: which buttons to tap to put the app on the Home Screen
+  function openGuide(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const G = self.TTGuide, pf = G.platform();
+    const ol = $('#guide-steps'); ol.innerHTML = '';
+    const list = G.steps(pf, t);
+    (list.length ? list : G.steps('ios26', t)).forEach(h => { const li = document.createElement('li'); li.innerHTML = h; ol.append(li); });
+    const extra = $('#guide-extra'); extra.innerHTML = '';
+    if (pf === 'android' && installPrompt) {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'btn btn-primary btn-block'; b.textContent = t('install');
+      b.onclick = () => { installPrompt.prompt(); installPrompt.userChoice.finally(() => { installPrompt = null; closeGuide(); renderHints(); }); };
+      extra.append(b);
+    }
+    if (pf === 'ios-other') {
+      const url = location.origin + location.pathname;
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'btn btn-primary btn-block'; b.textContent = t('copyLink');
+      b.onclick = () => {
+        const done = () => toast(t('linkCopied'));
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done, () => prompt('', url));
+        else prompt('', url);
+      };
+      extra.append(b);
+    }
+    const spot = G.arrowSpot(pf), ar = $('#guide-arrow');
+    ar.hidden = !spot; ar.className = 'guide-arrow' + (spot ? ' spot-' + spot : '');
+    $('#guide').hidden = false;
+  }
+  function closeGuide() { $('#guide').hidden = true; }
+
   // Project: list of parts
   let reorderMode = false;
+  // Drag a part by its handle (only in "Change order" mode, so the order can't change by accident).
+  function dragSort(li, handle, list, p) {
+    let startY = 0, active = false;
+    const pageY = (e) => e.clientY + window.scrollY;
+    handle.addEventListener('pointerdown', (e) => {
+      e.preventDefault(); active = true; startY = pageY(e);
+      handle.setPointerCapture(e.pointerId); li.classList.add('dragging'); list.classList.add('drag-active');
+      if (navigator.vibrate) navigator.vibrate(10);
+    });
+    handle.addEventListener('pointermove', (e) => {
+      if (!active) return;
+      if (e.clientY < 70) window.scrollBy(0, -10); else if (e.clientY > window.innerHeight - 70) window.scrollBy(0, 10);
+      const y = pageY(e), mid = (el) => el.getBoundingClientRect().top + window.scrollY + el.offsetHeight / 2;
+      const before = li.offsetTop;
+      const prev = li.previousElementSibling, next = li.nextElementSibling;
+      if (prev && y < mid(prev)) list.insertBefore(li, prev);
+      else if (next && y > mid(next)) list.insertBefore(next, li);
+      startY += li.offsetTop - before;   // keep the part under the finger after it moved in the list
+      li.style.transform = 'translateY(' + (y - startY) + 'px)';
+    });
+    const end = () => {
+      if (!active) return; active = false;
+      li.classList.remove('dragging'); list.classList.remove('drag-active'); li.style.transform = '';
+      const ids = [...list.children].map(el => el.dataset.id);
+      const changed = ids.some((id, k) => p.parts[k].id !== id);
+      if (changed) { p.parts.sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id)); S.touch(p); }
+    };
+    handle.addEventListener('pointerup', end);
+    handle.addEventListener('pointercancel', end);
+  }
   function openParts(p) {
     $('#pp-name').textContent = p.name;
     const tt = projTotals(p), ty = typeOf(p);
-    $('#pp-totals').textContent = ty.icon + ' ' + ty[lang] + ' · ' + t('partsDone', { d: tt.done, n: tt.n }) + ' · ' + nRows(tt.rows) + ' · ' + fmtDur(tt.ms);
+    $('#pp-totals').textContent = ty.icon + ' ' + ty[lang] + ' · ' + t('partsDone', { d: tt.done, n: tt.n }) + ' · ' + nRows(tt.rows) + withTime(tt.ms);
     const list = $('#part-list'); list.innerHTML = ''; list.classList.toggle('reordering', reorderMode);
     p.parts.forEach((x, i) => {
-      const meta = (x.done ? '✓ ' + t('finished') + ' · ' : '') + (x.target ? x.count + ' / ' + x.target + ' ' + t('rows') : nRows(x.count) + ' · ' + t('noTarget')) + ' · ' + fmtDur(x.totalMs);
+      const meta = (x.done ? '✓ ' + t('finished') + ' · ' : '') + (x.target ? x.count + ' / ' + x.target + ' ' + t('rows') : nRows(x.count) + ' · ' + t('noTarget')) + withTime(x.totalMs);
       const c = card(reorderMode ? null : '#/c/' + p.id + '/' + x.id, x.count, x.name, meta, x.target ? x.count / x.target : null);
       const li = reorderMode ? document.createElement('li') : listItem(c, {
         title: x.name, onDelete: p.parts.length > 1 ? () => deletePartUndo(p, x) : null, actions: partActions(p, x)
@@ -218,21 +281,19 @@
       li.classList.add('part-item'); if (x.done) li.classList.add('is-done');
       if (reorderMode) li.append(c);
       if (reorderMode) {
-        const box = document.createElement('div'); box.className = 'move-btns';
-        [['↑', -1], ['↓', 1]].forEach(([lbl, d]) => {
-          const b = document.createElement('button'); b.className = 'btn btn-small'; b.textContent = lbl;
-          b.setAttribute('aria-label', d < 0 ? t('moveUp') : t('moveDown'));
-          b.disabled = (i + d < 0) || (i + d >= p.parts.length);
-          b.onclick = () => { const a = p.parts; [a[i], a[i + d]] = [a[i + d], a[i]]; S.touch(p); openParts(p); };
-          box.append(b);
-        });
-        li.append(box);
+        li.dataset.id = x.id;
+        const h = document.createElement('div'); h.className = 'drag-handle'; h.setAttribute('aria-label', t('dragToMove'));
+        h.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>';
+        li.append(h); dragSort(li, h, list, p);
       }
       list.append(li);
     });
     $('#btn-reorder').hidden = p.parts.length < 2;
-    $('#btn-reorder').textContent = reorderMode ? t('reorderDone') : t('reorder');
+    $('#btn-reorder').textContent = reorderMode ? t('orderDoneShort') : t('orderShort');
+    $('#btn-reorder').setAttribute('aria-label', reorderMode ? t('reorderDone') : t('reorder'));
+    $('#btn-reorder').classList.toggle('btn-primary', reorderMode);
     $('#btn-add-part').hidden = reorderMode;
+    $('#reorder-hint').hidden = !reorderMode;
     show('view-parts');
   }
 
@@ -267,6 +328,7 @@
     $('#btn-plus').classList.toggle('is-done', x.done);
     $('#btn-finish').textContent = x.done ? t('reopen') : t('finishBtn');
     $('#p-stats-box').open = S.state.settings.statsOpen !== false;
+    document.body.classList.toggle('no-time', !timeOn());
     renderClock();
     renderStats();
   }
@@ -313,7 +375,7 @@
   }
   function checkIdle() {
     const x = cp(); const st = S.state.settings;
-    if (!x || !x.timer.running || !st.idleRemind) return;
+    if (!x || !x.timer.running || !st.idleRemind || !timeOn()) return;
     const now = Date.now(), remindMs = st.idleRemind * 60000;
     if (!idleAlertAt && now - lastActivity >= remindMs) {
       idleAlertAt = now;
@@ -362,7 +424,7 @@
     x.log.push({ t: now, d: d > 0 ? d : null });
     if (x.log.length > S.LOG_MAX) x.log.shift();
     x.count += 1;
-    x.timer = { running: true, start: now, acc: 0 };
+    x.timer = { running: timeOn(), start: timeOn() ? now : null, acc: 0 };
     S.touch(cproj());
     const c = $('#btn-plus'); c.classList.remove('bump'); void c.offsetWidth; c.classList.add('bump');
     renderProject();
@@ -401,19 +463,46 @@
   }
   function renderTypes() {
     const box = $('#np-types'); box.innerHTML = '';
-    self.TT_TYPES.forEach(ty => {
-      const b = document.createElement('button'); b.type = 'button'; b.className = 'type-btn' + (ty.key === npType ? ' active' : '');
+    const cur = self.TT_TYPES.find(x => x.key === npType) || {};
+    self.TT_TYPES.filter(ty => !ty.variantOf).forEach(ty => {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'type-btn' + (ty.key === npType || ty.key === cur.variantOf ? ' active' : '');
       const i = document.createElement('span'); i.className = 'type-icon'; i.textContent = ty.icon;
       const l = document.createElement('span'); l.textContent = ty[lang];
       b.append(i, l); b.onclick = () => selectType(ty.key);
       box.append(b);
     });
   }
+  // Knitted from the top down or the bottom up: same parts, other order (custom parts stay at the end).
+  let npDir = 'down';
+  function setDir(dir) {
+    const ty = self.TT_TYPES.find(x => x.key === npType);
+    if (!ty || !ty.bottomUp || dir === npDir) return;
+    npDir = dir;
+    const order = dir === 'up' ? ty.bottomUp : ty.parts.map((x, k) => k);
+    const tpl = npItems.filter(x => x.tpl != null), custom = npItems.filter(x => x.tpl == null);
+    npItems = order.map(k => tpl.find(x => x.tpl === k)).filter(Boolean).concat(custom);
+    $$('#np-dir button').forEach(b => b.classList.toggle('active', b.dataset.value === npDir));
+    renderNpItems();
+  }
   function selectType(key) {
     npType = key;
     const ty = self.TT_TYPES.find(x => x.key === key);
     const custom = npItems.filter(x => x.custom);
-    npItems = ty.parts.map(x => ({ name: x[lang], on: x.on, target: 0 })).concat(custom);
+    npDir = 'down';
+    npItems = ty.parts.map((x, k) => ({ name: x[lang], on: x.on, target: 0, tpl: k })).concat(custom);
+    $('#np-dir-row').hidden = !ty.bottomUp;
+    const dl = ty.dirLabels || ['topDown', 'bottomUp'];
+    $$('#np-dir button').forEach((b, k) => { b.textContent = t(dl[k]); b.classList.toggle('active', b.dataset.value === npDir); });
+    // Style (e.g. sweater in pieces / in the round): the base type and its variants
+    const base = ty.variantOf ? self.TT_TYPES.find(x => x.key === ty.variantOf) : ty;
+    const styles = [base].concat(self.TT_TYPES.filter(x => x.variantOf === base.key));
+    const sr = $('#np-style'); sr.innerHTML = '';
+    $('#np-style-row').hidden = styles.length < 2;
+    if (styles.length > 1) styles.forEach(st => {
+      const b = document.createElement('button'); b.type = 'button'; b.textContent = t(st.style);
+      b.classList.toggle('active', st.key === ty.key); b.onclick = () => { if (st.key !== npType) selectType(st.key); };
+      sr.append(b);
+    });
     $('#np-pair-row').hidden = !ty.pair;
     $('#np-pair').checked = !!ty.pair;
     renderTypes(); renderNpItems();
@@ -467,7 +556,7 @@
   }
 
   // ---------- new / edit part ----------
-  let editing = null, editProject = null;
+  let editing = null, editProject = null, editGuardUntil = 0, editFocusOk = null;
   function openPartEdit(p, x) {
     editProject = p; editing = x;
     $('#edit-title').textContent = x ? t('editPartTitle') : t('addPartTitle');
@@ -487,6 +576,9 @@
     sug.forEach(nm => { const c = document.createElement('button'); c.type = 'button'; c.className = 'chip'; c.textContent = nm; c.onclick = () => { $('#f-name').value = nm; }; box.append(c); });
     $('#f-suggest-wrap').hidden = !!x || !sug.length;
     show('view-edit');
+    // For a short moment only the field we choose may get the cursor: a stray tap from the previous screen
+    // (e.g. the menu button under your finger) must not land in a field such as "Current row".
+    editGuardUntil = Date.now() + 700; editFocusOk = x ? null : $('#f-name');
     if (!x) setTimeout(() => $('#f-name').focus(), 50);
   }
   function saveEdit(ev) {
@@ -527,6 +619,8 @@
     $('#set-lang').value = st.lang;
     $$('#set-theme button').forEach(b => b.classList.toggle('active', b.dataset.value === st.theme));
     $('#set-wake').checked = !!st.wake;
+    $('#set-time').checked = timeOn();
+    $('#idle-card').hidden = !timeOn();
     $('#set-idle-remind').value = String(st.idleRemind);
     $('#set-idle-pause').value = String(st.idlePause);
     $('#set-idle-flash').checked = !!st.idleFlash;
@@ -702,7 +796,7 @@
     const missing = x.target ? x.target - x.count : 0;
     if (missing > 0) {
       const jokes = (self.TT_JOKES[lang] || self.TT_JOKES.en);
-      const joke = jokes[p.type] || jokes.other;
+      const joke = jokes[p.type] || jokes[typeOf(p).like] || jokes.other;
       const actions = finishChoices(p, x, t('finishAnyway'));
       actions.push({ heading: t('notFinished') });
       actions.push({ label: t('keepKnitting'), run: () => {} });
@@ -754,19 +848,23 @@
   $('#btn-edit-cancel').onclick = () => { if (editing) go('#/c/' + editProject.id + '/' + editing.id); else go('#/p/' + editProject.id); };
   $('#btn-np-cancel').onclick = () => { if (npEditing) go('#/p/' + npEditing.id); else go('#/'); };
   $('#np-form').addEventListener('submit', saveProjectForm);
+  $$('#np-dir button').forEach(b => b.onclick = () => setDir(b.dataset.value));
   $('#np-custom-add').onclick = addCustom;
   $('#np-custom').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); addCustom(); } });
   $('#btn-delete-project').onclick = deleteProject;
   $('#btn-plus').addEventListener('click', plus);
   $('#btn-minus').onclick = minus;
   $('#btn-finish').onclick = finishButton;
-  $('#p-set-target').onclick = () => { go('#/part/' + cur.pid + '/' + cur.partId); setTimeout(() => $('#f-target').focus(), 80); };
+  $('#p-set-target').onclick = () => { go('#/part/' + cur.pid + '/' + cur.partId); setTimeout(() => { editFocusOk = $('#f-target'); $('#f-target').focus(); }, 80); };
   $('#sheet').addEventListener('click', (e) => {
     if (Date.now() - sheetOpenedAt < 350) return;          // ignore the tap that opened it
     if (e.target.id === 'sheet' || e.target.id === 'sheet-cancel') closeSheet();
   });
   $('#btn-timer').onclick = toggleTimer;
   $('#edit-form').addEventListener('submit', saveEdit);
+  $('#view-edit').addEventListener('focusin', (e) => {
+    if (Date.now() < editGuardUntil && e.target !== editFocusOk && e.target.matches('input, textarea')) { e.target.blur(); window.scrollTo(0, 0); }
+  });
   $('#btn-delete').onclick = deletePart;
   $('#btn-copy-part').onclick = copyPart;
   $('#p-stats-box').addEventListener('toggle', (e) => { if (S.state.settings.statsOpen !== e.target.open) { S.state.settings.statsOpen = e.target.open; S.save(); } });
@@ -777,6 +875,13 @@
   // (part names are stored as typed; changing the language later doesn't rename them)
   $$('#set-theme button').forEach(b => b.onclick = () => { S.state.settings.theme = b.dataset.value; S.save(); applyTheme(); openSettings(); });
   $('#set-wake').onchange = (e) => { S.state.settings.wake = e.target.checked; S.save(); };
+  $('#set-time').onchange = (e) => {
+    if (e.target.checked) { S.state.settings.timeOn = true; S.save(); openSettings(); return; }
+    e.target.checked = true;   // only off after confirming
+    openSheet(t('timeTitle'), [
+      { label: t('timeOffYes'), primary: true, run: () => { pauseAll(); S.state.settings.timeOn = false; S.save(); openSettings(); } }
+    ], t('timeOffConfirm'));
+  };
   $('#set-autoupdate').onchange = (e) => { S.state.settings.autoUpdate = e.target.checked; S.save(); };
   $('#btn-check-update').onclick = () => manualCheck();
   $('#set-idle-remind').onchange = (e) => { S.state.settings.idleRemind = +e.target.value; S.save(); openSettings(); };
@@ -793,6 +898,9 @@
   window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installPrompt = e; if (!$('#view-home').hidden) renderHints(); });
 
   window.addEventListener('hashchange', route);
+  $('#guide-close').onclick = closeGuide;
+  $('#guide').addEventListener('click', (e) => { if (e.target.id === 'guide') closeGuide(); });
+  $('#btn-guide').onclick = openGuide;
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) { pauseAll(); releaseWake(); }
     else if (cur) { markActivity(); renderProject(); requestWake(); }
@@ -861,4 +969,10 @@
   applyTheme();
   applyLanguage();
   route();
+  // Opened via the install page / QR code (…/?install): show the guide right away, and drop "?install" from the
+  // address so the Home Screen icon opens the normal app.
+  if (/[?&]install\b/.test(location.search)) {
+    history.replaceState(null, '', location.pathname + location.hash);
+    if (!(navigator.standalone || matchMedia('(display-mode: standalone)').matches)) openGuide();
+  }
 })();

@@ -7,6 +7,32 @@ published (see [How-To → Publishing a new version](docs/HOW-TO.md#publishing-a
 
 (nothing yet)
 
+## 0.3.0-alpha (2026-11-09)
+
+* Project screen: **＋ Part** and **⇅ Order** are now small buttons at the top, above the parts (no scrolling down
+  in a long list).
+* **Knitted in pieces or in one piece.** *Sweater* now asks **In pieces** or **In the round**, *Cardigan* asks **In pieces**
+  or **In one piece**. In one piece, the phases are ready-made parts (neckband, yoke, body, bottom rib, sleeves; plus
+  button band for a cardigan) and you choose **From the top down** or **From the bottom up** (e.g. an Icelandic
+  sweater: body and sleeves first, then the yoke); the parts follow that order.
+* **Socks** can be knitted **cuff down** or **toe up**, a **hat** from the brim or from the crown: the parts follow the
+  chosen direction.
+* **Easier installing.** The tip on the home screen now has a **Show me how** button with the exact steps for your phone,
+  with the real button icons: iPhone with iOS 26 (⋯ → Share → Add to Home Screen), older iPhones, Android, and a
+  *copy link* for people who opened the link inside WhatsApp or another app (that only works in Safari). On iPhone a
+  bouncing arrow points at the button to tap. Also in Settings → Help.
+* **Install page** `install.html` with a QR code: show it on a computer and scan it with the phone, or send the link.
+  The QR code opens Toerteller with the steps already on screen.
+* **Time tracking can be switched off** (Settings → *Keep track of time*), for knitters who find the clock
+  stressful. You are asked to confirm; then the row timer, times, statistics and the *Still knitting?* reminder
+  disappear and you just count rows. Times measured before are kept, and switching it on again brings everything back.
+* **Change order** by dragging: in *Change order* mode every part has a ☰ handle to drag it up or down (replaces the
+  ↑ ↓ buttons). Outside that mode the order can't change by accident.
+* Fix: opening *Edit* on a part could put the cursor in *Current row* (with the keyboard open) instead of starting at
+  the top.
+* Settings → Language: the first choice now reads *Follow system (phone)*: the app uses the phone's language; below it
+  you can pick a language yourself.
+
 ## 0.2.0-alpha (2026-11-09)
 
 * The counter's time and statistics blocks sit under a header *Time and statistics* that you can fold away; the app

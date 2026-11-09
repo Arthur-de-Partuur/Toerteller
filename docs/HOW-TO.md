@@ -18,10 +18,18 @@
 
 1. Open <https://arthur-de-partuur.github.io/Toerteller/> in **Safari** (other browsers on iPhone can't do step 2 as
    well).
-2. Tap the **Share** button (square with an arrow) → **Add to Home Screen** → **Add**.
+2. iOS 26: tap **⋯** at the bottom right (next to the address bar) → **Share** → scroll down → **Add to Home Screen**
+   → leave *Open as Web App* on → **Add**. Older iPhones: tap **Share** (square with an arrow) at the bottom →
+   **Add to Home Screen** → **Add**.
 3. Start Toerteller from the new icon. It opens full screen and works without internet.
 
-Until it is on the Home Screen, the app shows a tip about this (on iPhone and Android). Installing matters: iOS may clear the data of websites
+Until it is on the Home Screen, the app shows a tip with a **Show me how** button: it lists the steps for that phone
+with the real button icons, and on iPhone an arrow points at the button to tap (also in Settings → Help).
+If the link was opened inside WhatsApp or another app, the guide says to open it in Safari and offers **Copy link**.
+
+**Install page:** <https://arthur-de-partuur.github.io/Toerteller/install.html> has a QR code and the steps for iPhone
+and Android. Open it on a computer and let someone scan the code with their phone camera, or send them the link. The
+QR code opens Toerteller with the steps already on screen. Installing matters: iOS may clear the data of websites
 that are not used for a while, but not of apps on the Home Screen.
 
 ## Installing on Android
@@ -53,6 +61,11 @@ Every part has its own counter, goal, pattern repeat, timer, statistics and note
    | Blanket | Squares / panels, Border |
    | Other | nothing: add your own |
 
+   *Sweater* and *Cardigan* also ask how they are knitted: **In pieces** (back, fronts and sleeves separately) or
+   **In the round** / **In one piece** on a circular needle. In one piece you get the phases as parts (Neckband, Yoke,
+   Body, Bottom rib, Left sleeve, Right sleeve; a cardigan also gets Button band) and choose **From the top down** or
+   **From the bottom up**. Socks: **Cuff down** or **Toe up**. Hat: **Brim up** or **Crown down**. The parts follow
+   the chosen order.
 3. Untick what you don't need. If you know it, fill in the **number of rows** in the box next to a part (optional;
    you can also do it later). Type your own part in the box below the list and tap **Add** (remove it again with ✕).
 4. Socks and mittens: **Twice (left and right)** creates every part for both sides (*Boord · links* … *Boord · rechts*).
@@ -65,11 +78,11 @@ Every part has its own counter, goal, pattern repeat, timer, statistics and note
 * **Swipe left** on a project or part to show a red **Delete** button. Or **long-press** it, or tap **⋯**, for a menu:
   Open, Rename / Edit (rows, repeat …), Mark as finished, Make a copy, Delete. After deleting, tap **Undo** in the
   message at the bottom within a few seconds to get it back.
-* **+ Add part**: tap a suggestion for this type of project, or type your own name. Optional: goal and repeat.
+* **＋ Part** (top right, above the parts): tap a suggestion for this type of project, or type your own name. Optional: goal and repeat.
 * **Edit** a part (pencil in the counter): name, **number of rows (goal)**, **pattern repeat**, **current row**,
   and **This part is finished** (shown with ✓ and a green counter). Here you can also **Make a copy** (same goal,
   repeat and notes, counter at 0; handy for the second sleeve) and **Delete part**.
-* **Change order**: move parts with ↑ ↓, then tap **Done reordering**.
+* **Change order**: tap **⇅ Order** (top right, above the parts), drag each part by its **☰** handle to its new place, then tap **✓ Done**. Outside this mode the order can't change by accident.
 * **Edit** the project (pencil on the parts screen): rename it or **Delete project**.
 * The goal: shows "of 120", a progress bar and the time left. The pattern repeat: e.g. `8` shows
   *Repeat 3 · row 5 of 8*; the bar turns green on the last row of a repeat. When a part reaches its goal, the app asks
@@ -83,6 +96,7 @@ Every part has its own counter, goal, pattern repeat, timer, statistics and note
   missing (with a little joke) and you can still choose *No, I'll knit a bit more*. On a finished part the button
   reads **↺ Not finished after all** to reopen it.
 * Projects made with version 0.1.0 become a project with one part, *Hoofddeel*, with all counts and times.
+
 ## Counting rows
 
 * Tap the **big counter** after finishing a row. It adds 1.
@@ -93,6 +107,7 @@ Every part has its own counter, goal, pattern repeat, timer, statistics and note
 
 ## The timer and statistics
 
+* Don't want a clock? Switch it off in Settings → **Keep track of time**; then you only count rows.
 * The timer for **this row** starts automatically at your first tap and restarts at every new row.
 * It **pauses** by itself when you go back to the project list, switch to another app or lock the phone. Tap
   **Start** to continue, or just tap the counter when the row is done.
@@ -115,10 +130,13 @@ Every part has its own counter, goal, pattern repeat, timer, statistics and note
 
 Gear icon on the home screen.
 
-* **Language**: Automatic (follows the phone; languages the app does not have get English), Dansk, Deutsch, English, Nederlands, Norsk or Svenska (alphabetical). Part names you already created keep the name they were given.
-* **Colours**: Automatic (follows the iPhone's dark mode), Light or Dark.
+* **Language**: *Follow system (phone)* uses the phone's language (languages the app does not have get English), or choose one yourself: Dansk, Deutsch, English, Nederlands, Norsk or Svenska (alphabetical). Part names you already created keep the name they were given.
+* **Colours**: Automatic (follows the phone's dark mode), Light or Dark.
 * **Keep screen on**: the screen doesn't switch off while a project is open (needs iOS 16.4 or newer).
-* **Still knitting?**: *Signal after* (Off, 2–30 min), *Then pause after* (Never, 1–15 min), and which signals:
+* **Keep track of time**: switch off if the clock is stressful. You are asked first; then the row timer, all
+  times, the statistics and the *Still knitting?* reminder disappear and you only count rows. Times measured earlier
+  are kept and come back when you switch it on again.
+* **Still knitting?** (only when time is kept): *Signal after* (Off, 2–30 min), *Then pause after* (Never, 1–15 min), and which signals:
   Flash, Sound, Vibrate (Vibrate is only shown on phones that support it).
 
 ## Backup and moving to a new phone
@@ -186,6 +204,8 @@ Steps:
 | `js/store.js` | Storing projects on the phone; backup format. |
 | `js/i18n.js` | All texts in Dutch and English, plus the jokes. |
 | `js/lang/*.js` | Danish, German, Norwegian and Swedish texts (same keys as `i18n.js`). |
+| `install.html` | Install page with QR code (the QR images are `icons/qr-app.svg` and `icons/qr-app-test.svg`). |
+| `js/install-guide.js` | The *Show me how* install steps per phone (used by the app and the install page). |
 | `js/templates.js` | Project types and their usual parts (all six languages). |
 | `js/version.js` | Version number and date. |
 | `js/channel.js` | Live app or test copy (rewritten by `tools/build-pages.sh` for `/dev/`). |

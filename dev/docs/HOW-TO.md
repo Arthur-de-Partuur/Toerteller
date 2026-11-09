@@ -78,7 +78,7 @@ Every part has its own counter, goal, pattern repeat, timer, statistics and note
 * **Swipe left** on a project or part to show a red **Delete** button. Or **long-press** it, or tap **⋯**, for a menu:
   Open, Rename / Edit (rows, repeat …), Mark as finished, Make a copy, Delete. After deleting, tap **Undo** in the
   message at the bottom within a few seconds to get it back.
-* **+ Add part**: tap a suggestion for this type of project, or type your own name. Optional: goal and repeat.
+* **＋ Part** (top right, above the parts): tap a suggestion for this type of project, or type your own name. Optional: goal and repeat.
 * **Edit** a part (pencil in the counter): name, **number of rows (goal)**, **pattern repeat**, **current row**,
   and **This part is finished** (shown with ✓ and a green counter). Here you can also **Make a copy** (same goal,
   repeat and notes, counter at 0; handy for the second sleeve) and **Delete part**.
@@ -96,6 +96,7 @@ Every part has its own counter, goal, pattern repeat, timer, statistics and note
   missing (with a little joke) and you can still choose *No, I'll knit a bit more*. On a finished part the button
   reads **↺ Not finished after all** to reopen it.
 * Projects made with version 0.1.0 become a project with one part, *Hoofddeel*, with all counts and times.
+
 ## Counting rows
 
 * Tap the **big counter** after finishing a row. It adds 1.
@@ -106,6 +107,7 @@ Every part has its own counter, goal, pattern repeat, timer, statistics and note
 
 ## The timer and statistics
 
+* Don't want a clock? Switch it off in Settings → **Keep track of time**; then you only count rows.
 * The timer for **this row** starts automatically at your first tap and restarts at every new row.
 * It **pauses** by itself when you go back to the project list, switch to another app or lock the phone. Tap
   **Start** to continue, or just tap the counter when the row is done.
@@ -129,7 +131,7 @@ Every part has its own counter, goal, pattern repeat, timer, statistics and note
 Gear icon on the home screen.
 
 * **Language**: *Follow system (phone)* uses the phone's language (languages the app does not have get English), or choose one yourself: Dansk, Deutsch, English, Nederlands, Norsk or Svenska (alphabetical). Part names you already created keep the name they were given.
-* **Colours**: Automatic (follows the iPhone's dark mode), Light or Dark.
+* **Colours**: Automatic (follows the phone's dark mode), Light or Dark.
 * **Keep screen on**: the screen doesn't switch off while a project is open (needs iOS 16.4 or newer).
 * **Keep track of time**: switch off if the clock is stressful. You are asked first; then the row timer, all
   times, the statistics and the *Still knitting?* reminder disappear and you only count rows. Times measured earlier

@@ -50,9 +50,12 @@
         </button>
       </header>
       <div class="totals" id="pp-totals"></div>
+      <div class="parts-tools">
+        <button class="btn btn-small" id="btn-reorder" type="button"></button>
+        <button class="btn btn-small btn-primary" id="btn-add-part" type="button" data-i18n="addShort" data-i18n-aria="addPart"></button>
+      </div>
+      <p class="muted reorder-hint" id="reorder-hint" data-i18n="reorderHint" hidden></p>
       <ul class="project-list" id="part-list"></ul>
-      <button class="btn btn-primary btn-block" id="btn-add-part" data-i18n="addPart"></button>
-      <button class="btn btn-ghost btn-block" id="btn-reorder" data-i18n="reorder"></button>
       <footer class="footer" data-footer></footer>
     </section>
 
@@ -123,6 +126,17 @@
         <div id="np-parts-wrap">
           <div class="field-label" data-i18n="partsToKnit"></div>
           <small class="help" data-i18n="partsHelp"></small>
+          <div id="np-style-row" class="np-choice" hidden>
+            <small class="help" data-i18n="dirHelp"></small>
+            <div class="segmented" id="np-style"></div>
+          </div>
+          <div id="np-dir-row" class="np-choice" hidden>
+            <small class="help" data-i18n="dirOrder"></small>
+            <div class="segmented" id="np-dir">
+              <button type="button" data-value="down"></button>
+              <button type="button" data-value="up"></button>
+            </div>
+          </div>
           <label class="check-row" id="np-pair-row"><input type="checkbox" id="np-pair"> <span data-i18n="pairHelp"></span></label>
           <ul class="check-list" id="np-parts"></ul>
           <div class="add-row">
@@ -178,9 +192,9 @@
       </header>
 
       <div class="card">
-        <label class="select-row"><span class="select-title" data-i18n="language"></span>
+        <label class="select-row select-stack"><span class="select-title" data-i18n="language"></span>
           <select id="set-lang">
-            <option value="auto" data-i18n="automatic"></option>
+            <option value="auto" data-i18n="langSystem"></option>
             <option value="da">Dansk</option>
             <option value="de">Deutsch</option>
             <option value="en">English</option>
@@ -208,6 +222,13 @@
       </div>
 
       <div class="card">
+        <label class="switch-row">
+          <span><strong data-i18n="timeTitle"></strong><small data-i18n="timeHelp"></small></span>
+          <input type="checkbox" id="set-time" class="switch">
+        </label>
+      </div>
+
+      <div class="card" id="idle-card">
         <h2 data-i18n="idleTitle"></h2>
         <p class="muted" data-i18n="idleHelp"></p>
         <label class="select-row"><span data-i18n="idleRemind"></span>
@@ -254,12 +275,28 @@
       <div class="card">
         <h2 data-i18n="help"></h2>
         <p><a href="https://github.com/Arthur-de-Partuur/Toerteller/blob/main/docs/HOW-TO.md" target="_blank" rel="noopener" data-i18n="howTo"></a></p>
+        <p><a href="#" id="btn-guide" data-i18n="guideTitle"></a> · <a href="install.html" data-i18n="ipTitle"></a></p>
       </div>
       <footer class="footer" data-footer></footer>
     </section>
   </div>
 
   <div class="toast" id="toast" role="status" hidden></div>
+
+  <!-- Install guide (add to Home Screen) -->
+  <div id="guide" class="guide" hidden>
+    <div class="guide-card" role="dialog" aria-modal="true" aria-labelledby="guide-title">
+      <h2 id="guide-title" data-i18n="guideTitle"></h2>
+      <ol class="guide-steps" id="guide-steps"></ol>
+      <div id="guide-extra"></div>
+      <p class="muted guide-done" data-i18n="gDone"></p>
+      <button class="btn btn-ghost btn-block" id="guide-close" type="button" data-i18n="dismiss"></button>
+    </div>
+    <div class="guide-arrow" id="guide-arrow" hidden>
+      <span data-i18n="gHere"></span>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v16M5 12l7 7 7-7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+  </div>
 
   <div class="sheet" id="sheet" hidden>
     <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
@@ -278,6 +315,7 @@
   <script src="js/lang/no.js"></script>
   <script src="js/lang/sv.js"></script>
   <script src="js/templates.js"></script>
+  <script src="js/install-guide.js"></script>
   <script src="js/store.js"></script>
   <script src="js/app.js"></script>
 </body>
