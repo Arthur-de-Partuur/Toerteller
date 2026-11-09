@@ -5,7 +5,7 @@
 **A row counter for knitting (breien) on the phone (iPhone and Android). Tap once per finished row (toer).**
 
 Keep several knitting projects, split into parts (back, front, sleeves …), each part with its own counter, goal,
-pattern-repeat counter, notes and a timer per row with total knitting time. Available in Dutch, English, Danish, German, Norwegian and Swedish, and it works offline.
+pattern-repeat counter, notes and a timer per row with total knitting time. Available in Danish, Dutch, English, German, Norwegian and Swedish, and it works offline.
 
 **Open the app:** <https://arthur-de-partuur.github.io/Toerteller/>
 

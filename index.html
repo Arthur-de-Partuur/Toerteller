@@ -38,13 +38,31 @@
       <footer class="footer" data-footer></footer>
     </section>
 
-    <!-- Counter for one project -->
+    <!-- One project: its parts -->
+    <section id="view-parts" class="view" hidden>
+      <header class="topbar">
+        <button class="icon-btn" id="btn-parts-back" data-i18n-aria="back" aria-label="Terug">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 4 7.5 12l8 8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <h1 class="title" id="pp-name"></h1>
+        <button class="icon-btn" id="btn-project-edit" data-i18n-aria="edit" aria-label="Bewerken">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4Zm11-17 4 4 1.5-1.5a1.4 1.4 0 0 0 0-2L18.5 1.5a1.4 1.4 0 0 0-2 0L15 3Z"/></svg>
+        </button>
+      </header>
+      <div class="totals" id="pp-totals"></div>
+      <ul class="project-list" id="part-list"></ul>
+      <button class="btn btn-primary btn-block" id="btn-add-part" data-i18n="addPart"></button>
+      <button class="btn btn-ghost btn-block" id="btn-reorder" data-i18n="reorder"></button>
+      <footer class="footer" data-footer></footer>
+    </section>
+
+    <!-- Counter for one part -->
     <section id="view-project" class="view" hidden>
       <header class="topbar">
         <button class="icon-btn" id="btn-back" data-i18n-aria="back" aria-label="Terug">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 4 7.5 12l8 8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
-        <h1 class="title" id="p-name"></h1>
+        <div class="title-wrap"><h1 class="title" id="p-name"></h1><div class="subtitle" id="p-project"></div></div>
         <button class="icon-btn" id="btn-edit" data-i18n-aria="edit" aria-label="Bewerken">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4Zm11-17 4 4 1.5-1.5a1.4 1.4 0 0 0 0-2L18.5 1.5a1.4 1.4 0 0 0-2 0L15 3Z"/></svg>
         </button>
@@ -57,9 +75,12 @@
         <span class="counter-hint" data-i18n="tapToAdd"></span>
       </button>
 
+      <button class="link-btn" id="p-set-target" type="button" hidden data-i18n="setTarget"></button>
       <div class="progress" id="p-progress" hidden><div class="progress-bar" id="p-progress-bar"></div></div>
 
       <div class="repeat" id="p-repeat" hidden></div>
+
+      <div class="idle-banner" id="idle-banner" role="alert" hidden></div>
 
       <div class="row-actions">
         <button class="btn btn-ghost" id="btn-minus" data-i18n="undo"></button>
@@ -69,8 +90,12 @@
         </div>
         <button class="btn btn-ghost" id="btn-timer" data-i18n="pause"></button>
       </div>
+      <button class="btn btn-ghost btn-block" id="btn-finish" type="button"></button>
 
-      <dl class="stats" id="p-stats"></dl>
+      <details class="stats-box" id="p-stats-box">
+        <summary data-i18n="statsTitle"></summary>
+        <dl class="stats" id="p-stats"></dl>
+      </details>
 
       <label class="notes">
         <span data-i18n="notes"></span>
@@ -79,7 +104,38 @@
       <footer class="footer" data-footer></footer>
     </section>
 
-    <!-- New / edit project -->
+    <!-- New project / edit project -->
+    <section id="view-newproject" class="view" hidden>
+      <header class="topbar">
+        <button class="icon-btn" id="btn-np-cancel" data-i18n-aria="back" aria-label="Terug">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 4 7.5 12l8 8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <h1 class="title" id="np-title"></h1>
+        <span class="icon-btn-spacer"></span>
+      </header>
+      <form id="np-form" class="form" autocomplete="off">
+        <label><span data-i18n="projectName"></span>
+          <input type="text" id="np-name" required maxlength="60" data-i18n-placeholder="namePlaceholder"></label>
+        <div id="np-type-wrap">
+          <div class="field-label" data-i18n="projectType"></div>
+          <div class="type-grid" id="np-types"></div>
+        </div>
+        <div id="np-parts-wrap">
+          <div class="field-label" data-i18n="partsToKnit"></div>
+          <small class="help" data-i18n="partsHelp"></small>
+          <label class="check-row" id="np-pair-row"><input type="checkbox" id="np-pair"> <span data-i18n="pairHelp"></span></label>
+          <ul class="check-list" id="np-parts"></ul>
+          <div class="add-row">
+            <input type="text" id="np-custom" maxlength="60" data-i18n-placeholder="customPart">
+            <button type="button" class="btn btn-ghost" id="np-custom-add" data-i18n="add"></button>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" id="np-submit"></button>
+        <button type="button" class="btn btn-danger btn-block" id="btn-delete-project" data-i18n="deleteProject"></button>
+      </form>
+    </section>
+
+    <!-- New / edit part -->
     <section id="view-edit" class="view" hidden>
       <header class="topbar">
         <button class="icon-btn" id="btn-edit-cancel" data-i18n-aria="back" aria-label="Terug">
@@ -89,8 +145,12 @@
         <span class="icon-btn-spacer"></span>
       </header>
       <form id="edit-form" class="form" autocomplete="off">
-        <label><span data-i18n="name"></span>
-          <input type="text" id="f-name" required maxlength="60" data-i18n-placeholder="namePlaceholder"></label>
+        <div id="f-suggest-wrap">
+          <div class="field-label" data-i18n="suggestions"></div>
+          <div class="chips" id="f-suggest"></div>
+        </div>
+        <label><span data-i18n="partName"></span>
+          <input type="text" id="f-name" required maxlength="60" data-i18n-placeholder="partPlaceholder"></label>
         <label><span data-i18n="target"></span>
           <input type="number" id="f-target" min="0" max="99999" inputmode="numeric" data-i18n-placeholder="optional">
           <small data-i18n="targetHelp"></small></label>
@@ -100,8 +160,10 @@
         <label id="f-count-wrap"><span data-i18n="currentRow"></span>
           <input type="number" id="f-count" min="0" max="99999" inputmode="numeric">
           <small data-i18n="currentRowHelp"></small></label>
+        <label class="check-row" id="f-done-wrap"><input type="checkbox" id="f-done"> <span data-i18n="partDone"></span></label>
         <button type="submit" class="btn btn-primary btn-block" data-i18n="save"></button>
-        <button type="button" class="btn btn-danger btn-block" id="btn-delete" data-i18n="deleteProject"></button>
+        <button type="button" class="btn btn-ghost btn-block" id="btn-copy-part" data-i18n="copyPart"></button>
+        <button type="button" class="btn btn-danger btn-block" id="btn-delete" data-i18n="deletePart"></button>
       </form>
     </section>
 
@@ -116,12 +178,17 @@
       </header>
 
       <div class="card">
-        <h2 data-i18n="language"></h2>
-        <div class="segmented" id="set-lang">
-          <button data-value="auto" data-i18n="automatic"></button>
-          <button data-value="nl">Nederlands</button>
-          <button data-value="en">English</button>
-        </div>
+        <label class="select-row"><span class="select-title" data-i18n="language"></span>
+          <select id="set-lang">
+            <option value="auto" data-i18n="automatic"></option>
+            <option value="da">Dansk</option>
+            <option value="de">Deutsch</option>
+            <option value="en">English</option>
+            <option value="nl">Nederlands</option>
+            <option value="no">Norsk</option>
+            <option value="sv">Svenska</option>
+          </select>
+        </label>
       </div>
 
       <div class="card">
@@ -141,6 +208,28 @@
       </div>
 
       <div class="card">
+        <h2 data-i18n="idleTitle"></h2>
+        <p class="muted" data-i18n="idleHelp"></p>
+        <label class="select-row"><span data-i18n="idleRemind"></span>
+          <select id="set-idle-remind">
+            <option value="0" data-i18n="off"></option>
+            <option value="2">2 min</option><option value="3">3 min</option><option value="5">5 min</option>
+            <option value="10">10 min</option><option value="15">15 min</option><option value="20">20 min</option><option value="30">30 min</option>
+          </select></label>
+        <div id="idle-details">
+          <label class="select-row"><span data-i18n="idlePause"></span>
+            <select id="set-idle-pause">
+              <option value="0" data-i18n="never"></option>
+              <option value="1">1 min</option><option value="2">2 min</option><option value="5">5 min</option>
+              <option value="10">10 min</option><option value="15">15 min</option>
+            </select></label>
+          <label class="check-row"><input type="checkbox" id="set-idle-flash"> <span data-i18n="idleFlash"></span></label>
+          <label class="check-row"><input type="checkbox" id="set-idle-sound"> <span data-i18n="idleSound"></span></label>
+          <label class="check-row" id="set-idle-vibrate-row"><input type="checkbox" id="set-idle-vibrate"> <span data-i18n="idleVibrate"></span></label>
+        </div>
+      </div>
+
+      <div class="card">
         <h2 data-i18n="backup"></h2>
         <p class="muted" data-i18n="backupHelp"></p>
         <p class="muted" id="last-backup"></p>
@@ -149,6 +238,17 @@
           <span data-i18n="import"></span>
           <input type="file" id="file-import" accept=".json,application/json" hidden>
         </label>
+      </div>
+
+      <div class="card">
+        <h2 data-i18n="updates"></h2>
+        <label class="switch-row">
+          <span><strong data-i18n="autoUpdate"></strong><small data-i18n="autoUpdateHelp"></small></span>
+          <input type="checkbox" id="set-autoupdate" class="switch">
+        </label>
+        <p class="muted update-line"><span data-i18n="thisVersion"></span> <b id="update-version"></b></p>
+        <button class="btn btn-ghost btn-block" id="btn-check-update" data-i18n="checkNow"></button>
+        <p class="muted" id="update-status" role="status"></p>
       </div>
 
       <div class="card">
@@ -161,8 +261,23 @@
 
   <div class="toast" id="toast" role="status" hidden></div>
 
+  <div class="sheet" id="sheet" hidden>
+    <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+      <div class="sheet-title" id="sheet-title"></div>
+      <p class="sheet-message" id="sheet-message" hidden></p>
+      <div class="sheet-actions" id="sheet-actions"></div>
+      <button class="sheet-btn sheet-cancel" id="sheet-cancel" type="button" data-i18n="cancel"></button>
+    </div>
+  </div>
+
+  <script src="js/channel.js"></script>
   <script src="js/version.js"></script>
   <script src="js/i18n.js"></script>
+  <script src="js/lang/da.js"></script>
+  <script src="js/lang/de.js"></script>
+  <script src="js/lang/no.js"></script>
+  <script src="js/lang/sv.js"></script>
+  <script src="js/templates.js"></script>
   <script src="js/store.js"></script>
   <script src="js/app.js"></script>
 </body>

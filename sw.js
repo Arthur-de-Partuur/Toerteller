@@ -1,10 +1,10 @@
 // Service worker: keeps Toerteller working offline. The cache name follows the app version,
 // so publishing a new version (js/version.js) replaces the cached files.
 importScripts('js/version.js');
-const CACHE = 'toerteller-' + self.TT_VERSION.version;
+const CACHE = 'toerteller-' + self.TT_VERSION.version + (self.TT_VERSION.build ? '-' + self.TT_VERSION.build : '');
 const FILES = [
   './', 'index.html', 'manifest.webmanifest',
-  'css/style.css', 'js/version.js', 'js/i18n.js', 'js/store.js', 'js/app.js',
+  'css/style.css', 'js/channel.js', 'js/version.js', 'js/i18n.js', 'js/lang/da.js', 'js/lang/de.js', 'js/lang/no.js', 'js/lang/sv.js', 'js/templates.js', 'js/store.js', 'js/app.js',
   'icons/icon.svg', 'icons/apple-touch-icon.png', 'icons/icon-192.png', 'icons/icon-512.png'
 ];
 

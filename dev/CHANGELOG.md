@@ -5,11 +5,15 @@ published (see [How-To → Publishing a new version](docs/HOW-TO.md#publishing-a
 
 ## Unreleased
 
+(nothing yet)
+
+## 0.2.0-alpha (2026-11-09)
+
 * The counter's time and statistics blocks sit under a header *Time and statistics* that you can fold away; the app
-  remembers your choice. The finish button now asks *✓ Part finished?*
+  remembers your choice.
 * **Danish, German, Norwegian and Swedish.** All texts, project types, part names and the "finish early" jokes are now
   available in Dansk, Deutsch, Norsk and Svenska as well. *Automatic* follows the phone's language (other languages
-  get English); Settings → Language now offers all seven choices. Knitting terms follow DROPS Design patterns; the
+  get English); Settings → Language now offers all seven choices, in alphabetical order. Knitting terms follow DROPS Design patterns; the
   translations still need a check by native speakers.
 * **Projects with parts.** A project (e.g. *Trui voor Jan*) now consists of parts (back, front, left sleeve …), each
   with its own counter, goal, pattern repeat, timer, statistics and notes.
@@ -34,7 +38,7 @@ published (see [How-To → Publishing a new version](docs/HOW-TO.md#publishing-a
 * **Goal reached?** When a part reaches its number of rows, the app asks whether the part is finished. *Yes*: choose
   which part to continue with (the next one is highlighted) or go back to the project; the part is marked finished
   and its timer stops. *No*: add rows to the goal, just keep counting, or undo an accidental tap.
-* **✓ Part finished** button under the counter, to finish a part yourself and pick the next one. If rows are still
+* **✓ Part finished?** button under the counter, to finish a part yourself and pick the next one. If rows are still
   missing it warns you, with a wink per project type ("your sweater will be a little short… crop tops are back in
   fashion!"). On a finished part the button reads **↺ Not finished after all**.
 * **Deleting made easy:** swipe a project or part to the left for a red *Delete* button, or long-press it (or tap ⋯)
@@ -48,7 +52,6 @@ published (see [How-To → Publishing a new version](docs/HOW-TO.md#publishing-a
   0:00). The total knitting time never changes on undo.
 * "1 toer / 1 row" instead of "1 toeren / 1 rows".
 * Footer shows *development build, not yet published* until a version is published.
-
 * Test copy of unpublished versions at `/Toerteller/dev/` (orange TEST label, own data), and a phone test
   checklist (`docs/TESTING.md`).
 
