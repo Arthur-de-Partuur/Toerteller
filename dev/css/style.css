@@ -221,7 +221,11 @@ body.channel-dev::before { content: "TEST"; position: fixed; top: env(safe-area-
 .sheet-panel { width: 100%; max-width: 560px; background: var(--surface); border-radius: 20px 20px 0 0; padding: 14px 16px calc(env(safe-area-inset-bottom) + 14px); display: grid; gap: 8px; transform: translateY(20px); opacity: 0; transition: transform .18s ease, opacity .18s ease; }
 .sheet.open .sheet-panel { transform: none; opacity: 1; }
 .sheet-title { text-align: center; color: var(--muted); font-size: 14px; padding: 4px 0 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sheet-actions { display: grid; gap: 8px; }
+.sheet-actions { display: grid; gap: 8px; max-height: 60dvh; overflow-y: auto; }
+.sheet-message { margin: 0 0 4px; text-align: center; font-size: 20px; font-weight: 700; }
+.sheet-message[hidden] { display: none; }
+.sheet-heading { font-size: 13px; color: var(--muted); font-weight: 600; margin: 6px 2px 0; }
+.sheet-btn.primary { background: var(--primary); color: var(--primary-ink); }
 .sheet-btn { border: 0; border-radius: 14px; min-height: 50px; background: var(--surface-2); font-weight: 600; font-size: 16px; }
 .sheet-btn.danger { color: var(--danger); }
 .sheet-cancel { background: transparent; border: 1px solid var(--line); }

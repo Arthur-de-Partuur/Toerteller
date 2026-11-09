@@ -26,3 +26,4 @@ publishing. Mark ✅ (works), ❌ (problem, describe it) or – (not tested yet)
 | 18 | Swipe left on a project/part shows **Delete**; normal scrolling still works | – | – |
 | 19 | Long-press on a project/part opens the menu (no text selection popup) | – | – |
 | 20 | *Undo* after deleting brings it back | – | – |
+| 21 | Reaching the number of rows shows *Is … finished?*; choosing the next part opens it; *Add rows* asks for a number | – | – |

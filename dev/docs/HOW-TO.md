@@ -72,8 +72,12 @@ Every part has its own counter, goal, pattern repeat, timer, statistics and note
 * **Change order**: move parts with ↑ ↓, then tap **Done reordering**.
 * **Edit** the project (pencil on the parts screen): rename it or **Delete project**.
 * The goal: shows "of 120", a progress bar and the time left. The pattern repeat: e.g. `8` shows
-  *Repeat 3 · row 5 of 8*; the bar turns green on the last row of a repeat. When a part reaches its goal, the app says
-  so.
+  *Repeat 3 · row 5 of 8*; the bar turns green on the last row of a repeat. When a part reaches its goal, the app asks
+  **Is "…" finished?**
+  * *Yes, finished. Continue with:* tap the part you knit next (the next one in the list is highlighted), or go back
+    to the project. The part is marked finished and its timer stops. After the last part: *That was the last part!*
+  * *No, not finished yet:* **Add rows to the goal…** (type how many), **Just keep counting** (no new goal), or
+    **Tapped by accident** (undo).
 * Projects made with version 0.1.0 become a project with one part, *Hoofddeel*, with all counts and times.
 ## Counting rows
 

@@ -352,7 +352,7 @@
     S.touch(cproj());
     const c = $('#btn-plus'); c.classList.remove('bump'); void c.offsetWidth; c.classList.add('bump');
     renderProject();
-    if (x.target && x.count === x.target && !x.done) toast(t('targetReached'));
+    if (x.target && x.count === x.target && !x.done) targetDialog(cproj(), x);
   }
 
   function minus() {
@@ -636,17 +636,46 @@
 
   // Options sheet
   let sheetOpenedAt = 0;
-  function openSheet(title, actions) {
+  function openSheet(title, actions, message) {
     const sh = $('#sheet'); $('#sheet-title').textContent = title;
+    const msg = $('#sheet-message'); msg.textContent = message || ''; msg.hidden = !message;
     const box = $('#sheet-actions'); box.innerHTML = '';
     actions.filter(Boolean).forEach(a => {
-      const b = document.createElement('button'); b.type = 'button'; b.className = 'sheet-btn' + (a.danger ? ' danger' : ''); b.textContent = a.label;
+      if (a.heading) { const h = document.createElement('div'); h.className = 'sheet-heading'; h.textContent = a.heading; box.append(h); return; }
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'sheet-btn' + (a.danger ? ' danger' : '') + (a.primary ? ' primary' : ''); b.textContent = a.label;
       b.onclick = () => { if (Date.now() - sheetOpenedAt < 350) return; closeSheet(); a.run(); };
       box.append(b);
     });
     sh.hidden = false; sheetOpenedAt = Date.now(); requestAnimationFrame(() => sh.classList.add('open'));
   }
   function closeSheet() { const sh = $('#sheet'); sh.classList.remove('open'); sh.hidden = true; }
+  // Goal reached: finish the part and go on with another one, add rows, keep counting, or undo the tap.
+  function targetDialog(p, x) {
+    const others = p.parts.filter(y => y !== x && !y.done);
+    const after = p.parts.slice(p.parts.indexOf(x) + 1).find(y => !y.done) || others[0];
+    const finish = () => { pauseTimer(x); x.timer.acc = 0; x.done = true; S.touch(p); };
+    const actions = [];
+    if (others.length) {
+      actions.push({ heading: t('finishedGoTo') });
+      // the next part in the list first, then the others
+      [after].concat(others.filter(y => y !== after)).forEach(y => actions.push({
+        label: y.name + (y.target ? ' (' + y.count + '/' + y.target + ')' : ''), primary: y === after,
+        run: () => { finish(); go('#/c/' + p.id + '/' + y.id); toast(t('partFinished', { name: x.name })); }
+      }));
+      actions.push({ label: t('finishedToProject'), run: () => { finish(); go('#/p/' + p.id); } });
+    } else {
+      actions.push({ label: t('finishedProject'), primary: true, run: () => { finish(); go('#/p/' + p.id); toast(t('projectFinished', { name: p.name })); } });
+    }
+    actions.push({ heading: t('notFinished') });
+    actions.push({ label: t('addRows'), run: () => {
+      const v = parseInt(prompt(t('addRowsAsk', { n: x.target }), '10'), 10);
+      if (Number.isFinite(v) && v > 0) { x.target += v; S.touch(p); renderProject(); toast(t('newTarget', { n: x.target })); }
+    } });
+    actions.push({ label: t('keepCounting'), run: () => {} });
+    actions.push({ label: t('undoTap'), run: () => minus() });
+    openSheet(t('targetReachedTitle', { n: x.target }), actions, t('targetReachedMsg', { name: x.name }));
+  }
+
   function projectActions(p) {
     return [
       { label: t('open'), run: () => go('#/p/' + p.id) },
