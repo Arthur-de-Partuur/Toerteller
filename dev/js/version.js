@@ -2,5 +2,6 @@
 // so changing this number makes every installed copy fetch the new files.
 self.TT_VERSION = {
   version: '0.2.0-dev',
-  date: 'unreleased'  // set the date and time when publishing
+  date: 'unreleased',  // set the date and time when publishing
+  build: '145015f'            // filled in by tools/build-pages.sh (commit), so every build is seen as an update
 };

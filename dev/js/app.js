@@ -7,6 +7,7 @@
   const BACKUP_NAG_DAYS = 14;
 
   let lang = 'nl';
+  const VLABEL = self.TT_VERSION.version + (self.TT_VERSION.build ? ' (' + self.TT_VERSION.build + ')' : '');
   let cur = null;                // { pid, partId } shown in the counter view
   let tickTimer = null;
   let wakeLock = null;
@@ -31,7 +32,7 @@
     const v = self.TT_VERSION;
     $$('[data-footer]').forEach(el => {
       el.innerHTML = '';
-      const a = document.createElement('div'); a.textContent = 'Toerteller v' + v.version + ' · ' + (v.date === 'unreleased' ? t('unreleased') : t('published') + ' ' + v.date);
+      const a = document.createElement('div'); a.textContent = 'Toerteller v' + VLABEL + ' · ' + (v.date === 'unreleased' ? t('unreleased') : t('published') + ' ' + v.date);
       const b = document.createElement('div'); b.textContent = t('footerRights');
       el.append(a, b);
     });
@@ -521,7 +522,7 @@
     $('#set-idle-vibrate').checked = !!st.idleVibrate;
     $('#idle-details').hidden = !st.idleRemind;
     $('#set-autoupdate').checked = !!st.autoUpdate;
-    $('#update-version').textContent = 'v' + self.TT_VERSION.version;
+    $('#update-version').textContent = 'v' + VLABEL;
     $('#update-status').textContent = '';
     $('#last-backup').textContent = S.state.lastBackup ? t('lastBackup', { date: fmtDate(S.state.lastBackup) }) : t('neverBackup');
     show('view-settings');
@@ -789,7 +790,7 @@
   // The browser itself checks sw.js when the app is opened; on top of that we check at most once a day.
   // A new version installs in the background; the app reloads itself at a quiet moment
   // (not while the row timer is running in the counter screen). Projects are never touched.
-  let swReg = null, updatePending = false;
+  let swReg = null, updatePending = false, manualUpdate = false;
   const UPDATE_EVERY_MS = 24 * 3600000;   // at most once a day while the app is open
   const LAST_CHECK = self.TT_CHANNEL.prefix + 'lastUpdateCheck';
   function dailyCheck() {
@@ -806,15 +807,17 @@
   }
   function checkForUpdate() { if (swReg) return swReg.update().catch(() => {}); return Promise.resolve(); }
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-    const hadController = !!navigator.serviceWorker.controller;
+    let hadController = !!navigator.serviceWorker.controller;
     navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(reg => {
       swReg = reg;
       dailyCheck();
       setInterval(() => { if (!document.hidden) dailyCheck(); }, 3600000);
     }).catch(() => {});
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (!hadController) return;           // first install, nothing to update
-      updatePending = true; applyUpdate();
+      if (!hadController) { hadController = true; return; }   // first install, nothing to update
+      updatePending = true;
+      if (manualUpdate) { pauseAll(); location.reload(); return; }
+      applyUpdate();
     });
     document.addEventListener('visibilitychange', () => { if (!document.hidden) { dailyCheck(); if (updatePending) applyUpdate(); } });
     window.addEventListener('hashchange', () => { if (updatePending) setTimeout(applyUpdate, 50); });
@@ -822,17 +825,22 @@
 
   async function manualCheck() {
     const el = $('#update-status'); el.textContent = t('checking');
-    if (!swReg) { el.textContent = t('upToDate', { v: self.TT_VERSION.version }); return; }
+    if (!swReg) { el.textContent = t('upToDate', { v: VLABEL }); return; }
     await checkForUpdate();
-    if (swReg.installing || swReg.waiting || updatePending) { el.textContent = t('updateFound'); setTimeout(() => { updatePending = true; pauseAll(); location.reload(); }, 1500); }
-    else el.textContent = t('upToDate', { v: self.TT_VERSION.version });
+    if (swReg.installing || swReg.waiting || updatePending) {
+      // Wait until the new version is installed and active, then restart.
+      el.textContent = t('updateFound'); manualUpdate = true;
+      if (updatePending || swReg.waiting) { pauseAll(); location.reload(); }
+      setTimeout(() => { pauseAll(); location.reload(); }, 15000);   // safety net
+    }
+    else el.textContent = t('upToDate', { v: VLABEL });
   }
 
   // Tell the user once after an update.
   try {
     const seen = localStorage.getItem(self.TT_CHANNEL.prefix + 'version');
-    if (seen && seen !== self.TT_VERSION.version) setTimeout(() => toast(t('updated', { v: self.TT_VERSION.version })), 400);
-    localStorage.setItem(self.TT_CHANNEL.prefix + 'version', self.TT_VERSION.version);
+    if (seen && seen !== VLABEL) setTimeout(() => toast(t('updated', { v: VLABEL })), 400);
+    localStorage.setItem(self.TT_CHANNEL.prefix + 'version', VLABEL);
   } catch (e) { /* ignore */ }
 
   // ---------- start ----------
