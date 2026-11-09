@@ -25,6 +25,9 @@ published (see [How-To → Publishing a new version](docs/HOW-TO.md#publishing-a
   installs it in the background and restarts itself at a quiet moment (never while the row timer runs). Settings →
   Updates: switch automatic updating off (you then get a *tap to refresh* message), see the version and **Check for a
   new version now**. After an update the app says *Updated to version …*.
+* **Goal reached?** When a part reaches its number of rows, the app asks whether the part is finished. *Yes*: choose
+  which part to continue with (the next one is highlighted) or go back to the project; the part is marked finished
+  and its timer stops. *No*: add rows to the goal, just keep counting, or undo an accidental tap.
 * **Deleting made easy:** swipe a project or part to the left for a red *Delete* button, or long-press it (or tap ⋯)
   for a menu: Open, Rename/Edit, Mark as finished, Make a copy, Delete. After deleting, *Undo* is available for a
   few seconds.
