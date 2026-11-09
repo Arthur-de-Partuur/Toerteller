@@ -53,6 +53,8 @@ Every part has its own counter, goal, pattern repeat, timer, statistics and note
    |---|---|
    | Sweater | Back, Front, Left sleeve, Right sleeve, Neckband (+ Yoke, Collar, Hood, Pockets) |
    | Cardigan | Back, Left front, Right front, Left sleeve, Right sleeve, Button band (+ Collar, Yoke, Hood, Pockets) |
+   | Sweater in the round | Knitted in one piece (choose *From the top down* or *From the bottom up*; the order of the parts follows): Neckband, Yoke, Body, Bottom rib, Left sleeve, Right sleeve (+ Collar, Hood) |
+   | Cardigan in one piece | Neckband, Yoke, Body, Bottom rib, Left sleeve, Right sleeve, Button band (+ Collar, Hood) |
    | Socks | Cuff, Leg, Heel flap, Heel turn, Gusset, Foot, Toe |
    | Hat | Brim, Body, Crown |
    | Mittens / gloves | Cuff, Hand, Thumb (+ Fingers) |

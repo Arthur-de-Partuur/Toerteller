@@ -1,5 +1,7 @@
 // Project types and their usual parts, in every language of the app (nl, en, da, de, no, sv).
 // "on" = ticked by default when starting a project.
+// "bottomUp" = order of the parts (indexes) when knitted bottom-up; offers a Top-down / Bottom-up choice.
+// "like" = joke and behaviour of this similar type (for types knitted in one piece).
 // "pair" = the parts are knitted twice (left and right), e.g. socks and mittens.
 // Knitting terms checked against DROPS Design patterns (garnstudio.com); custom parts can always be added in the app.
 self.TT_TYPES = [
@@ -14,6 +16,18 @@ self.TT_TYPES = [
     { on: false, nl: 'Capuchon', en: 'Hood', da: 'Hætte', de: 'Kapuze', no: 'Hette', sv: 'Huva' },
     { on: false, nl: 'Zakken', en: 'Pockets', da: 'Lommer', de: 'Taschen', no: 'Lommer', sv: 'Fickor' }
   ] },
+  { key: 'sweaterRound', like: 'sweater', bottomUp: [3, 2, 4, 5, 1, 0, 6, 7], icon: '⭕', nl: 'Trui, rondgebreid', en: 'Sweater in the round', da: 'Sweater, rundstrikket', de: 'Pullover, in Runden', no: 'Genser, rundstrikket', sv: 'Tröja, rundstickad', parts: [
+    // Knitted in one piece on a circular needle; parts listed top-down, "bottomUp" = the order when knitted from the
+    // bottom up (e.g. Icelandic sweater: body and sleeves first, then the yoke). DROPS section names.
+    { on: true,  nl: 'Halsboord', en: 'Neckband', da: 'Halskant', de: 'Halsblende', no: 'Halskant', sv: 'Halskant' },
+    { on: true,  nl: 'Pas', en: 'Yoke', da: 'Bærestykke', de: 'Passe', no: 'Bærestykke', sv: 'Ok' },
+    { on: true,  nl: 'Lijf', en: 'Body', da: 'Bol', de: 'Rumpf', no: 'Bol', sv: 'Kropp' },
+    { on: true,  nl: 'Boord onderkant', en: 'Bottom rib', da: 'Rib forneden', de: 'Bündchen unten', no: 'Vrangbord nederst', sv: 'Resår nedtill' },
+    { on: true,  nl: 'Mouw links', en: 'Left sleeve', da: 'Venstre ærme', de: 'Linker Ärmel', no: 'Venstre erme', sv: 'Vänster ärm' },
+    { on: true,  nl: 'Mouw rechts', en: 'Right sleeve', da: 'Højre ærme', de: 'Rechter Ärmel', no: 'Høyre erme', sv: 'Höger ärm' },
+    { on: false, nl: 'Kraag', en: 'Collar', da: 'Krave', de: 'Kragen', no: 'Krage', sv: 'Krage' },
+    { on: false, nl: 'Capuchon', en: 'Hood', da: 'Hætte', de: 'Kapuze', no: 'Hette', sv: 'Huva' }
+  ] },
   { key: 'cardigan', icon: '🧥', nl: 'Vest', en: 'Cardigan', da: 'Cardigan', de: 'Jacke', no: 'Jakke', sv: 'Kofta', parts: [
     { on: true,  nl: 'Achterpand', en: 'Back', da: 'Ryg', de: 'Rückenteil', no: 'Bakstykke', sv: 'Bakstycke' },
     { on: true,  nl: 'Linker voorpand', en: 'Left front', da: 'Venstre forstykke', de: 'Linkes Vorderteil', no: 'Venstre forstykke', sv: 'Vänster framstycke' },
@@ -25,6 +39,18 @@ self.TT_TYPES = [
     { on: false, nl: 'Pas', en: 'Yoke', da: 'Bærestykke', de: 'Passe', no: 'Bærestykke', sv: 'Ok' },
     { on: false, nl: 'Capuchon', en: 'Hood', da: 'Hætte', de: 'Kapuze', no: 'Hette', sv: 'Huva' },
     { on: false, nl: 'Zakken', en: 'Pockets', da: 'Lommer', de: 'Taschen', no: 'Lommer', sv: 'Fickor' }
+  ] },
+  { key: 'cardiganOne', like: 'cardigan', bottomUp: [3, 2, 4, 5, 1, 0, 6, 7, 8], icon: '🧵', nl: 'Vest, in één stuk', en: 'Cardigan in one piece', da: 'Cardigan i ét stykke', de: 'Jacke in einem Stück', no: 'Jakke i ett stykke', sv: 'Kofta i ett stycke', parts: [
+    // Knitted in one piece on a circular needle (back and forth), top-down or bottom-up.
+    { on: true,  nl: 'Halsboord', en: 'Neckband', da: 'Halskant', de: 'Halsblende', no: 'Halskant', sv: 'Halskant' },
+    { on: true,  nl: 'Pas', en: 'Yoke', da: 'Bærestykke', de: 'Passe', no: 'Bærestykke', sv: 'Ok' },
+    { on: true,  nl: 'Lijf', en: 'Body', da: 'Bol', de: 'Rumpf', no: 'Bol', sv: 'Kropp' },
+    { on: true,  nl: 'Boord onderkant', en: 'Bottom rib', da: 'Rib forneden', de: 'Bündchen unten', no: 'Vrangbord nederst', sv: 'Resår nedtill' },
+    { on: true,  nl: 'Mouw links', en: 'Left sleeve', da: 'Venstre ærme', de: 'Linker Ärmel', no: 'Venstre erme', sv: 'Vänster ärm' },
+    { on: true,  nl: 'Mouw rechts', en: 'Right sleeve', da: 'Højre ærme', de: 'Rechter Ärmel', no: 'Høyre erme', sv: 'Höger ärm' },
+    { on: true,  nl: 'Knoopsluiting / biesje', en: 'Button band', da: 'Forkant', de: 'Knopfleiste', no: 'Stolpe', sv: 'Framkant' },
+    { on: false, nl: 'Kraag', en: 'Collar', da: 'Krave', de: 'Kragen', no: 'Krage', sv: 'Krage' },
+    { on: false, nl: 'Capuchon', en: 'Hood', da: 'Hætte', de: 'Kapuze', no: 'Hette', sv: 'Huva' }
   ] },
   { key: 'socks', icon: '🧦', nl: 'Sokken', en: 'Socks', da: 'Sokker', de: 'Socken', no: 'Sokker', sv: 'Sockor', pair: true, parts: [
     { on: true, nl: 'Boord', en: 'Cuff', da: 'Rib', de: 'Bündchen', no: 'Vrangbord', sv: 'Resår' },

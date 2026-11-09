@@ -469,11 +469,26 @@
       box.append(b);
     });
   }
+  // Knitted from the top down or the bottom up: same parts, other order (custom parts stay at the end).
+  let npDir = 'down';
+  function setDir(dir) {
+    const ty = self.TT_TYPES.find(x => x.key === npType);
+    if (!ty || !ty.bottomUp || dir === npDir) return;
+    npDir = dir;
+    const order = dir === 'up' ? ty.bottomUp : ty.parts.map((x, k) => k);
+    const tpl = npItems.filter(x => x.tpl != null), custom = npItems.filter(x => x.tpl == null);
+    npItems = order.map(k => tpl.find(x => x.tpl === k)).filter(Boolean).concat(custom);
+    $$('#np-dir button').forEach(b => b.classList.toggle('active', b.dataset.value === npDir));
+    renderNpItems();
+  }
   function selectType(key) {
     npType = key;
     const ty = self.TT_TYPES.find(x => x.key === key);
     const custom = npItems.filter(x => x.custom);
-    npItems = ty.parts.map(x => ({ name: x[lang], on: x.on, target: 0 })).concat(custom);
+    npDir = 'down';
+    npItems = ty.parts.map((x, k) => ({ name: x[lang], on: x.on, target: 0, tpl: k })).concat(custom);
+    $('#np-dir-row').hidden = !ty.bottomUp;
+    $$('#np-dir button').forEach(b => b.classList.toggle('active', b.dataset.value === npDir));
     $('#np-pair-row').hidden = !ty.pair;
     $('#np-pair').checked = !!ty.pair;
     renderTypes(); renderNpItems();
@@ -767,7 +782,7 @@
     const missing = x.target ? x.target - x.count : 0;
     if (missing > 0) {
       const jokes = (self.TT_JOKES[lang] || self.TT_JOKES.en);
-      const joke = jokes[p.type] || jokes.other;
+      const joke = jokes[p.type] || jokes[typeOf(p).like] || jokes.other;
       const actions = finishChoices(p, x, t('finishAnyway'));
       actions.push({ heading: t('notFinished') });
       actions.push({ label: t('keepKnitting'), run: () => {} });
@@ -819,6 +834,7 @@
   $('#btn-edit-cancel').onclick = () => { if (editing) go('#/c/' + editProject.id + '/' + editing.id); else go('#/p/' + editProject.id); };
   $('#btn-np-cancel').onclick = () => { if (npEditing) go('#/p/' + npEditing.id); else go('#/'); };
   $('#np-form').addEventListener('submit', saveProjectForm);
+  $$('#np-dir button').forEach(b => b.onclick = () => setDir(b.dataset.value));
   $('#np-custom-add').onclick = addCustom;
   $('#np-custom').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); addCustom(); } });
   $('#btn-delete-project').onclick = deleteProject;
