@@ -291,3 +291,5 @@ body.no-time .row-actions { grid-template-columns: 1fr; }
 .np-choice { margin: 6px 0 10px; }
 .np-choice .help { display: block; margin-bottom: 6px; }
 .np-choice[hidden] { display: none; }
+.parts-tools { display: flex; justify-content: flex-end; gap: 8px; margin: 2px 0 10px; }
+.parts-tools .btn[hidden] { display: none; }
