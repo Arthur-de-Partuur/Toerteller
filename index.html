@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Toerteller</title>
+  <meta name="description" content="Toerteller: tel je toeren tijdens het breien.">
+  <meta name="theme-color" content="#8E3B5F">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Toerteller">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Home: list of projects -->
+    <section id="view-home" class="view" hidden>
+      <header class="topbar">
+        <h1 class="brand"><img src="icons/icon.svg" alt="" class="brand-icon"> Toerteller</h1>
+        <button class="icon-btn" id="btn-settings" data-i18n-aria="settings" aria-label="Instellingen">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Zm7.4-2.5a7.6 7.6 0 0 0 0-2l2-1.6-2-3.4-2.4 1a7.5 7.5 0 0 0-1.7-1L15 3h-4l-.3 2.5a7.5 7.5 0 0 0-1.7 1l-2.4-1-2 3.4 2 1.6a7.6 7.6 0 0 0 0 2l-2 1.6 2 3.4 2.4-1a7.5 7.5 0 0 0 1.7 1L11 21h4l.3-2.5a7.5 7.5 0 0 0 1.7-1l2.4 1 2-3.4Z"/></svg>
+        </button>
+      </header>
+
+      <div id="install-hint" class="banner" hidden></div>
+      <div id="backup-hint" class="banner banner-soft" hidden></div>
+
+      <div class="totals" id="home-totals"></div>
+
+      <ul class="project-list" id="project-list"></ul>
+      <p class="empty" id="home-empty" hidden data-i18n="emptyProjects"></p>
+
+      <button class="btn btn-primary btn-block" id="btn-new" data-i18n="newProject"></button>
+      <footer class="footer" data-footer></footer>
+    </section>
+
+    <!-- Counter for one project -->
+    <section id="view-project" class="view" hidden>
+      <header class="topbar">
+        <button class="icon-btn" id="btn-back" data-i18n-aria="back" aria-label="Terug">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 4 7.5 12l8 8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <h1 class="title" id="p-name"></h1>
+        <button class="icon-btn" id="btn-edit" data-i18n-aria="edit" aria-label="Bewerken">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4Zm11-17 4 4 1.5-1.5a1.4 1.4 0 0 0 0-2L18.5 1.5a1.4 1.4 0 0 0-2 0L15 3Z"/></svg>
+        </button>
+      </header>
+
+      <button class="counter" id="btn-plus" aria-live="polite">
+        <span class="counter-label" data-i18n="row"></span>
+        <span class="counter-value" id="p-count">0</span>
+        <span class="counter-sub" id="p-target"></span>
+        <span class="counter-hint" data-i18n="tapToAdd"></span>
+      </button>
+
+      <div class="progress" id="p-progress" hidden><div class="progress-bar" id="p-progress-bar"></div></div>
+
+      <div class="repeat" id="p-repeat" hidden></div>
+
+      <div class="row-actions">
+        <button class="btn btn-ghost" id="btn-minus" data-i18n="undo"></button>
+        <div class="timer">
+          <span class="timer-label" data-i18n="thisRow"></span>
+          <span class="timer-value" id="p-timer">0:00</span>
+        </div>
+        <button class="btn btn-ghost" id="btn-timer" data-i18n="pause"></button>
+      </div>
+
+      <dl class="stats" id="p-stats"></dl>
+
+      <label class="notes">
+        <span data-i18n="notes"></span>
+        <textarea id="p-notes" rows="4" data-i18n-placeholder="notesPlaceholder"></textarea>
+      </label>
+      <footer class="footer" data-footer></footer>
+    </section>
+
+    <!-- New / edit project -->
+    <section id="view-edit" class="view" hidden>
+      <header class="topbar">
+        <button class="icon-btn" id="btn-edit-cancel" data-i18n-aria="back" aria-label="Terug">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 4 7.5 12l8 8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <h1 class="title" id="edit-title"></h1>
+        <span class="icon-btn-spacer"></span>
+      </header>
+      <form id="edit-form" class="form" autocomplete="off">
+        <label><span data-i18n="name"></span>
+          <input type="text" id="f-name" required maxlength="60" data-i18n-placeholder="namePlaceholder"></label>
+        <label><span data-i18n="target"></span>
+          <input type="number" id="f-target" min="0" max="99999" inputmode="numeric" data-i18n-placeholder="optional">
+          <small data-i18n="targetHelp"></small></label>
+        <label><span data-i18n="repeat"></span>
+          <input type="number" id="f-repeat" min="0" max="9999" inputmode="numeric" data-i18n-placeholder="optional">
+          <small data-i18n="repeatHelp"></small></label>
+        <label id="f-count-wrap"><span data-i18n="currentRow"></span>
+          <input type="number" id="f-count" min="0" max="99999" inputmode="numeric">
+          <small data-i18n="currentRowHelp"></small></label>
+        <button type="submit" class="btn btn-primary btn-block" data-i18n="save"></button>
+        <button type="button" class="btn btn-danger btn-block" id="btn-delete" data-i18n="deleteProject"></button>
+      </form>
+    </section>
+
+    <!-- Settings -->
+    <section id="view-settings" class="view" hidden>
+      <header class="topbar">
+        <button class="icon-btn" id="btn-settings-back" data-i18n-aria="back" aria-label="Terug">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 4 7.5 12l8 8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <h1 class="title" data-i18n="settings"></h1>
+        <span class="icon-btn-spacer"></span>
+      </header>
+
+      <div class="card">
+        <h2 data-i18n="language"></h2>
+        <div class="segmented" id="set-lang">
+          <button data-value="auto" data-i18n="automatic"></button>
+          <button data-value="nl">Nederlands</button>
+          <button data-value="en">English</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 data-i18n="colours"></h2>
+        <div class="segmented" id="set-theme">
+          <button data-value="auto" data-i18n="automatic"></button>
+          <button data-value="light" data-i18n="light"></button>
+          <button data-value="dark" data-i18n="dark"></button>
+        </div>
+      </div>
+
+      <div class="card">
+        <label class="switch-row">
+          <span><strong data-i18n="keepAwake"></strong><small data-i18n="keepAwakeHelp"></small></span>
+          <input type="checkbox" id="set-wake" class="switch">
+        </label>
+      </div>
+
+      <div class="card">
+        <h2 data-i18n="backup"></h2>
+        <p class="muted" data-i18n="backupHelp"></p>
+        <p class="muted" id="last-backup"></p>
+        <button class="btn btn-primary btn-block" id="btn-export" data-i18n="export"></button>
+        <label class="btn btn-ghost btn-block file-btn">
+          <span data-i18n="import"></span>
+          <input type="file" id="file-import" accept=".json,application/json" hidden>
+        </label>
+      </div>
+
+      <div class="card">
+        <h2 data-i18n="help"></h2>
+        <p><a href="https://github.com/Arthur-de-Partuur/Toerteller/blob/main/docs/HOW-TO.md" target="_blank" rel="noopener" data-i18n="howTo"></a></p>
+      </div>
+      <footer class="footer" data-footer></footer>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" role="status" hidden></div>
+
+  <script src="js/version.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
