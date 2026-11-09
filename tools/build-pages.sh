@@ -25,7 +25,7 @@ if git -C "$ROOT" show-ref -q refs/remotes/origin/gh-pages; then
 else
   git -C "$ROOT" worktree add -q --detach "$WT"; git -C "$WT" checkout -q --orphan gh-pages
 fi
-git -C "$WT" rm -rq . 2>/dev/null || true
+find "$WT" -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
 cp -a "$OUT/." "$WT/"
 git -C "$WT" add -A
 git -C "$WT" commit -qm "Pages: main $(git -C "$ROOT" rev-parse --short origin/main), dev $(git -C "$ROOT" rev-parse --short origin/dev)" || echo "nothing changed"
