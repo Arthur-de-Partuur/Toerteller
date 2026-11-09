@@ -5,6 +5,9 @@ published (see [How-To → Publishing a new version](docs/HOW-TO.md#publishing-a
 
 ## Unreleased
 
+* **Time tracking can be switched off** (Settings → *Keep track of time*), for knitters who find the clock
+  stressful. You are asked to confirm; then the row timer, times, statistics and the *Still knitting?* reminder
+  disappear and you just count rows. Times measured before are kept, and switching it on again brings everything back.
 * **Change order** by dragging: in *Change order* mode every part has a ☰ handle to drag it up or down (replaces the
   ↑ ↓ buttons). Outside that mode the order can't change by accident.
 * Fix: opening *Edit* on a part could put the cursor in *Current row* (with the keyboard open) instead of starting at

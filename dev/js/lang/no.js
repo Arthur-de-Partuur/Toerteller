@@ -11,7 +11,7 @@ self.TT_TEXT.no = {
   partDone: 'Denne delen er ferdig', copyPart: 'Lag en kopi (f.eks. til det andre ermet)', deletePart: 'Slett del',
   partsDone: '{d}/{n} deler ferdige', finished: 'ferdig', moveUp: 'Flytt opp', moveDown: 'Flytt ned',
   statProject: 'Hele prosjektet',
-  finishBtn: '✓ Del ferdig?', reorderHint: 'Dra en del i ☰ til den nye plassen.', dragToMove: 'Dra for å flytte', statsTitle: 'Tid og statistikk', langSystem: 'Følg systemet (telefon)', reopen: '↺ Likevel ikke ferdig', reopened: '«{name}» er åpen igjen',
+  finishBtn: '✓ Del ferdig?', timeTitle: 'Hold oversikt over tiden', timeHelp: 'Tidtaker per pinne, strikketid og påminnelsen når du tar pause. Slå av hvis klokken stresser: da teller du bare pinner.', timeOffConfirm: 'Slå av tidtaking? Tidtakeren stopper og påminnelsen er av. Tid som allerede er målt, beholdes.', timeOffYes: 'Ja, slå av', reorderHint: 'Dra en del i ☰ til den nye plassen.', dragToMove: 'Dra for å flytte', statsTitle: 'Tid og statistikk', langSystem: 'Følg systemet (telefon)', reopen: '↺ Likevel ikke ferdig', reopened: '«{name}» er åpen igjen',
   rowsMissing: 'Fortsatt {n} av {of} pinner igjen', finishAnyway: 'Ferdig likevel? Fortsett med:', keepKnitting: 'Nei, jeg strikker litt til',
   finishPartTitle: 'Er «{name}» ferdig?',
   targetReachedTitle: '🎉 {n} pinner nådd', targetReachedMsg: 'Er «{name}» ferdig?',

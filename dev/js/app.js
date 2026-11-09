@@ -90,6 +90,9 @@
     x.timer.running = true; x.timer.start = Date.now(); S.touch();
   }
   function pauseAll() { S.allParts().forEach(pauseTimer); }
+  // Time tracking can be switched off (Settings): then only rows are counted, no clock, times or reminder.
+  function timeOn() { return S.state.settings.timeOn !== false; }
+  const withTime = (ms) => (timeOn() ? ' · ' + fmtDur(ms) : '');
 
   // ---------- current project / part ----------
   function cproj() { return cur ? S.find(cur.pid) : null; }
@@ -159,7 +162,7 @@
     $('#home-empty').hidden = ps.length > 0;
     ps.forEach(p => {
       const tt = projTotals(p), ty = typeOf(p);
-      const meta = ty.icon + ' ' + ty[lang] + ' · ' + (tt.n > 1 ? t('partsDone', { d: tt.done, n: tt.n }) + ' · ' : '') + fmtDur(tt.ms);
+      const meta = ty.icon + ' ' + ty[lang] + (tt.n > 1 ? ' · ' + t('partsDone', { d: tt.done, n: tt.n }) : '') + withTime(tt.ms);
       list.append(listItem(card('#/p/' + p.id, tt.rows, p.name, meta, tt.target ? tt.rows / tt.target : null), {
         title: p.name, onDelete: () => deleteProjectUndo(p), actions: projectActions(p)
       }));
@@ -168,7 +171,9 @@
     if (ps.length) {
       tot.hidden = false;
       const parts = S.allParts();
-      tot.textContent = t('totalsLine', { p: ps.length === 1 ? t('project1') : t('projectN', { n: ps.length }), r: parts.reduce((a, x) => a + x.count, 0), t: fmtDur(parts.reduce((a, x) => a + x.totalMs, 0)) });
+      let line = t('totalsLine', { p: ps.length === 1 ? t('project1') : t('projectN', { n: ps.length }), r: parts.reduce((a, x) => a + x.count, 0), t: fmtDur(parts.reduce((a, x) => a + x.totalMs, 0)) });
+      if (!timeOn()) line = line.split(' · ').slice(0, 2).join(' · ');   // the time is always the last piece
+      tot.textContent = line;
     } else tot.hidden = true;
     renderHints();
   }
@@ -237,10 +242,10 @@
   function openParts(p) {
     $('#pp-name').textContent = p.name;
     const tt = projTotals(p), ty = typeOf(p);
-    $('#pp-totals').textContent = ty.icon + ' ' + ty[lang] + ' · ' + t('partsDone', { d: tt.done, n: tt.n }) + ' · ' + nRows(tt.rows) + ' · ' + fmtDur(tt.ms);
+    $('#pp-totals').textContent = ty.icon + ' ' + ty[lang] + ' · ' + t('partsDone', { d: tt.done, n: tt.n }) + ' · ' + nRows(tt.rows) + withTime(tt.ms);
     const list = $('#part-list'); list.innerHTML = ''; list.classList.toggle('reordering', reorderMode);
     p.parts.forEach((x, i) => {
-      const meta = (x.done ? '✓ ' + t('finished') + ' · ' : '') + (x.target ? x.count + ' / ' + x.target + ' ' + t('rows') : nRows(x.count) + ' · ' + t('noTarget')) + ' · ' + fmtDur(x.totalMs);
+      const meta = (x.done ? '✓ ' + t('finished') + ' · ' : '') + (x.target ? x.count + ' / ' + x.target + ' ' + t('rows') : nRows(x.count) + ' · ' + t('noTarget')) + withTime(x.totalMs);
       const c = card(reorderMode ? null : '#/c/' + p.id + '/' + x.id, x.count, x.name, meta, x.target ? x.count / x.target : null);
       const li = reorderMode ? document.createElement('li') : listItem(c, {
         title: x.name, onDelete: p.parts.length > 1 ? () => deletePartUndo(p, x) : null, actions: partActions(p, x)
@@ -293,6 +298,7 @@
     $('#btn-plus').classList.toggle('is-done', x.done);
     $('#btn-finish').textContent = x.done ? t('reopen') : t('finishBtn');
     $('#p-stats-box').open = S.state.settings.statsOpen !== false;
+    document.body.classList.toggle('no-time', !timeOn());
     renderClock();
     renderStats();
   }
@@ -339,7 +345,7 @@
   }
   function checkIdle() {
     const x = cp(); const st = S.state.settings;
-    if (!x || !x.timer.running || !st.idleRemind) return;
+    if (!x || !x.timer.running || !st.idleRemind || !timeOn()) return;
     const now = Date.now(), remindMs = st.idleRemind * 60000;
     if (!idleAlertAt && now - lastActivity >= remindMs) {
       idleAlertAt = now;
@@ -388,7 +394,7 @@
     x.log.push({ t: now, d: d > 0 ? d : null });
     if (x.log.length > S.LOG_MAX) x.log.shift();
     x.count += 1;
-    x.timer = { running: true, start: now, acc: 0 };
+    x.timer = { running: timeOn(), start: timeOn() ? now : null, acc: 0 };
     S.touch(cproj());
     const c = $('#btn-plus'); c.classList.remove('bump'); void c.offsetWidth; c.classList.add('bump');
     renderProject();
@@ -556,6 +562,8 @@
     $('#set-lang').value = st.lang;
     $$('#set-theme button').forEach(b => b.classList.toggle('active', b.dataset.value === st.theme));
     $('#set-wake').checked = !!st.wake;
+    $('#set-time').checked = timeOn();
+    $('#idle-card').hidden = !timeOn();
     $('#set-idle-remind').value = String(st.idleRemind);
     $('#set-idle-pause').value = String(st.idlePause);
     $('#set-idle-flash').checked = !!st.idleFlash;
@@ -809,6 +817,13 @@
   // (part names are stored as typed; changing the language later doesn't rename them)
   $$('#set-theme button').forEach(b => b.onclick = () => { S.state.settings.theme = b.dataset.value; S.save(); applyTheme(); openSettings(); });
   $('#set-wake').onchange = (e) => { S.state.settings.wake = e.target.checked; S.save(); };
+  $('#set-time').onchange = (e) => {
+    if (e.target.checked) { S.state.settings.timeOn = true; S.save(); openSettings(); return; }
+    e.target.checked = true;   // only off after confirming
+    openSheet(t('timeTitle'), [
+      { label: t('timeOffYes'), primary: true, run: () => { pauseAll(); S.state.settings.timeOn = false; S.save(); openSettings(); } }
+    ], t('timeOffConfirm'));
+  };
   $('#set-autoupdate').onchange = (e) => { S.state.settings.autoUpdate = e.target.checked; S.save(); };
   $('#btn-check-update').onclick = () => manualCheck();
   $('#set-idle-remind').onchange = (e) => { S.state.settings.idleRemind = +e.target.value; S.save(); openSettings(); };

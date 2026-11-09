@@ -8,7 +8,7 @@ publishing. Mark ✅ (works), ❌ (problem, describe it) or – (not tested yet)
 |---|---|---|---|
 | 1 | Install on the Home Screen (iPhone: Share → Add to Home Screen; Android: ⋮ → Install app); icon looks right | – | – |
 | 2 | App opens full screen and works with flight mode on | – | – |
-| 3 | **Keep screen on**: screen stays on for more than the normal auto-lock time in the counter | ✅ (2026-11-09) | – |
+| 3 | **Keep screen on**: screen stays on for more than the normal auto-lock time in the counter | ✅ (2026-11-09) | ✅ (2026-11-09, live app) |
 | 4 | Big counter: a quick double tap counts only once | – | – |
 | 5 | Timer pauses when switching to another app or locking the phone, and the time isn't counted | – | – |
 | 6 | **Still knitting?** signal after the set time: flashing | – | – |
@@ -29,4 +29,5 @@ publishing. Mark ✅ (works), ❌ (problem, describe it) or – (not tested yet)
 | 22 | *✓ Part finished* before the goal shows the warning with the joke; after the goal it just asks which part is next | – | – |
 | 21 | Reaching the number of rows shows *Is … finished?*; choosing the next part opens it; *Add rows* asks for a number | – | – |
 | 23 | Settings → Language: pick Dansk, Deutsch, Norsk, Svenska; texts and new project parts change; *Automatic* follows the phone language | – | – |
+| 25 | Settings → *Keep track of time* off: asks first; then no timer, times or statistics in the counter and lists, no reminder; rows still count; switching on brings it back | – | – |
 | 24 | Project → *Change order*: drag a part by ☰ up and down (also past the screen edge in a long list); the page itself can still scroll; order is kept after *Done* | – | – |
