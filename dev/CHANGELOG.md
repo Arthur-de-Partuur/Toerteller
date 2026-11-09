@@ -5,6 +5,8 @@ published (see [How-To → Publishing a new version](docs/HOW-TO.md#publishing-a
 
 ## Unreleased
 
+* The counter's time and statistics blocks sit under a header *Time and statistics* that you can fold away; the app
+  remembers your choice. The finish button now asks *✓ Part finished?*
 * **Danish, German, Norwegian and Swedish.** All texts, project types, part names and the "finish early" jokes are now
   available in Dansk, Deutsch, Norsk and Svenska as well. *Automatic* follows the phone's language (other languages
   get English); Settings → Language now offers all seven choices. Knitting terms follow DROPS Design patterns; the

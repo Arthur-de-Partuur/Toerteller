@@ -3,5 +3,5 @@
 self.TT_VERSION = {
   version: '0.2.0-dev',
   date: 'unreleased',  // set the date and time when publishing
-  build: '0761a9e'            // filled in by tools/build-pages.sh (commit), so every build is seen as an update
+  build: '7e57004'            // filled in by tools/build-pages.sh (commit), so every build is seen as an update
 };
