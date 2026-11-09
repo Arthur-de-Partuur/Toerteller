@@ -253,6 +253,7 @@
     $('#btn-timer').textContent = x.timer.running ? t('pause') : t('start');
     $('#btn-timer').classList.toggle('is-paused', !x.timer.running);
     $('#btn-plus').classList.toggle('is-done', x.done);
+    $('#btn-finish').textContent = x.done ? t('reopen') : t('finishBtn');
     renderClock();
     renderStats();
   }
@@ -650,13 +651,14 @@
   }
   function closeSheet() { const sh = $('#sheet'); sh.classList.remove('open'); sh.hidden = true; }
   // Goal reached: finish the part and go on with another one, add rows, keep counting, or undo the tap.
-  function targetDialog(p, x) {
+  // "Finished, continue with …" choices, shared by the goal dialog and the Finish button.
+  function finishChoices(p, x, heading) {
     const others = p.parts.filter(y => y !== x && !y.done);
     const after = p.parts.slice(p.parts.indexOf(x) + 1).find(y => !y.done) || others[0];
     const finish = () => { pauseTimer(x); x.timer.acc = 0; x.done = true; S.touch(p); };
     const actions = [];
     if (others.length) {
-      actions.push({ heading: t('finishedGoTo') });
+      actions.push({ heading: heading || t('finishedGoTo') });
       // the next part in the list first, then the others
       [after].concat(others.filter(y => y !== after)).forEach(y => actions.push({
         label: y.name + (y.target ? ' (' + y.count + '/' + y.target + ')' : ''), primary: y === after,
@@ -666,6 +668,10 @@
     } else {
       actions.push({ label: t('finishedProject'), primary: true, run: () => { finish(); go('#/p/' + p.id); toast(t('projectFinished', { name: p.name })); } });
     }
+    return actions;
+  }
+  function targetDialog(p, x) {
+    const actions = finishChoices(p, x);
     actions.push({ heading: t('notFinished') });
     actions.push({ label: t('addRows'), run: () => {
       const v = parseInt(prompt(t('addRowsAsk', { n: x.target }), '10'), 10);
@@ -674,6 +680,23 @@
     actions.push({ label: t('keepCounting'), run: () => {} });
     actions.push({ label: t('undoTap'), run: () => minus() });
     openSheet(t('targetReachedTitle', { n: x.target }), actions, t('targetReachedMsg', { name: x.name }));
+  }
+
+  // Finish button in the counter. Warns (with a wink) when rows are still missing.
+  function finishButton() {
+    const p = cproj(), x = cp(); if (!x) return;
+    if (x.done) { x.done = false; S.touch(p); renderProject(); toast(t('reopened', { name: x.name })); return; }
+    const missing = x.target ? x.target - x.count : 0;
+    if (missing > 0) {
+      const jokes = (self.TT_JOKES[lang] || self.TT_JOKES.en);
+      const joke = jokes[p.type] || jokes.other;
+      const actions = finishChoices(p, x, t('finishAnyway'));
+      actions.push({ heading: t('notFinished') });
+      actions.push({ label: t('keepKnitting'), run: () => {} });
+      openSheet(t('rowsMissing', { n: missing, of: x.target }), actions, joke);
+    } else {
+      openSheet(t('finishPartTitle', { name: x.name }), finishChoices(p, x));
+    }
   }
 
   function projectActions(p) {
@@ -723,6 +746,7 @@
   $('#btn-delete-project').onclick = deleteProject;
   $('#btn-plus').addEventListener('click', plus);
   $('#btn-minus').onclick = minus;
+  $('#btn-finish').onclick = finishButton;
   $('#p-set-target').onclick = () => { go('#/part/' + cur.pid + '/' + cur.partId); setTimeout(() => $('#f-target').focus(), 80); };
   $('#sheet').addEventListener('click', (e) => {
     if (Date.now() - sheetOpenedAt < 350) return;          // ignore the tap that opened it

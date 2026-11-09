@@ -12,6 +12,9 @@ self.TT_TEXT = {
     partDone: 'Dit onderdeel is klaar', copyPart: 'Kopie maken (bijv. voor de tweede mouw)', deletePart: 'Onderdeel verwijderen',
     partsDone: '{d}/{n} onderdelen klaar', finished: 'klaar', moveUp: 'Omhoog', moveDown: 'Omlaag',
     statProject: 'Hele project',
+    finishBtn: '✓ Onderdeel klaar', reopen: '↺ Toch nog niet klaar', reopened: '"{name}" is weer open',
+    rowsMissing: 'Nog {n} van de {of} toeren te gaan', finishAnyway: 'Toch klaar? Verder met:', keepKnitting: 'Nee, ik brei nog even door',
+    finishPartTitle: '"{name}" klaar?',
     targetReachedTitle: '🎉 {n} toeren bereikt', targetReachedMsg: 'Is "{name}" klaar?',
     finishedGoTo: 'Ja, klaar. Verder met:', finishedToProject: 'Ja, klaar. Terug naar het project',
     finishedProject: 'Ja, klaar. Dat was het laatste onderdeel!', notFinished: 'Nee, nog niet klaar:',
@@ -73,6 +76,9 @@ self.TT_TEXT = {
     partDone: 'This part is finished', copyPart: 'Make a copy (e.g. for the second sleeve)', deletePart: 'Delete part',
     partsDone: '{d}/{n} parts finished', finished: 'finished', moveUp: 'Move up', moveDown: 'Move down',
     statProject: 'Whole project',
+    finishBtn: '✓ Part finished', reopen: '↺ Not finished after all', reopened: '"{name}" is open again',
+    rowsMissing: 'Still {n} of {of} rows to go', finishAnyway: 'Finished anyway? Continue with:', keepKnitting: 'No, I\u2019ll knit a bit more',
+    finishPartTitle: '"{name}" finished?',
     targetReachedTitle: '🎉 {n} rows reached', targetReachedMsg: 'Is "{name}" finished?',
     finishedGoTo: 'Yes, finished. Continue with:', finishedToProject: 'Yes, finished. Back to the project',
     finishedProject: 'Yes, finished. That was the last part!', notFinished: 'No, not finished yet:',
@@ -121,5 +127,31 @@ self.TT_TEXT = {
     idleFlash: 'Flash', idleSound: 'Sound', idleVibrate: 'Vibrate',
     idleAsk: 'No tap for {m} min. Still knitting? Tap anywhere to continue.',
     idlePaused: 'Timer paused automatically. Tap Start or the counter to continue.'
+  }
+};
+
+// A wink when finishing a part before its number of rows is reached, per project type.
+self.TT_JOKES = {
+  nl: {
+    sweater: 'Je trui wordt dan wel een tikkeltje kort… buikshirtjes zijn weer helemaal in! 😉',
+    cardigan: 'Een vest met een korte mouw? Noem het gewoon een zomermodel. 😉',
+    socks: 'Dat worden dan enkelsokjes. Ook gezellig. 😉',
+    hat: 'Een muts die net niet over je oren past… heel stoer, maar wel koud. 😉',
+    mittens: 'Wanten zonder vingertoppen? Ideaal om mee te appen! 😉',
+    scarf: 'Een sjaal of toch een strikje? 😉',
+    shawl: 'Een omslagdoekje voor de pop dan? 😉',
+    blanket: 'Een dekentje voor de kat is ook een deken. 😉',
+    other: 'Weet je het zeker? Straks is het nét te kort. 😉'
+  },
+  en: {
+    sweater: 'Your sweater will be a little short… crop tops are back in fashion! 😉',
+    cardigan: 'Short sleeves on a cardigan? Just call it the summer edition. 😉',
+    socks: 'Ankle socks it is, then. Also nice. 😉',
+    hat: 'A hat that doesn\u2019t quite cover your ears… stylish, but chilly. 😉',
+    mittens: 'Fingerless mittens? Perfect for texting! 😉',
+    scarf: 'A scarf, or rather a bow tie? 😉',
+    shawl: 'A shawl for a doll, then? 😉',
+    blanket: 'A blanket for the cat is still a blanket. 😉',
+    other: 'Are you sure? It might end up just a bit too short. 😉'
   }
 };
