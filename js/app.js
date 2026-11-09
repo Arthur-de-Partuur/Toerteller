@@ -11,6 +11,9 @@
   let tickTimer = null;
   let wakeLock = null;
   let lastTap = 0;
+  let lastActivity = Date.now();  // last touch in the counter screen (for the inactivity reminder)
+  let idleAlertAt = 0;            // when the reminder went off (0 = not now)
+  let audioCtx = null;
 
   // ---------- texts ----------
   function t(key, vars) {
@@ -28,7 +31,7 @@
     const v = self.TT_VERSION;
     $$('[data-footer]').forEach(el => {
       el.innerHTML = '';
-      const a = document.createElement('div'); a.textContent = 'Toerteller v' + v.version + ' · ' + t('published') + ' ' + v.date;
+      const a = document.createElement('div'); a.textContent = 'Toerteller v' + v.version + ' · ' + (v.date === 'unreleased' ? t('unreleased') : t('published') + ' ' + v.date);
       const b = document.createElement('div'); b.textContent = t('footerRights');
       el.append(a, b);
     });
@@ -44,6 +47,7 @@
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
 
   // ---------- formatting ----------
+  function nRows(n) { return n + ' ' + (n === 1 ? t('row').toLowerCase() : t('rows')); }
   function fmtClock(ms) {
     const s = Math.floor(ms / 1000), h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
     return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(sec).padStart(2, '0');
@@ -114,7 +118,7 @@
       const a = document.createElement('a'); a.href = '#/p/' + p.id; a.className = 'project-card';
       const name = document.createElement('span'); name.className = 'pc-name'; name.textContent = p.name;
       const meta = document.createElement('span'); meta.className = 'pc-meta';
-      meta.textContent = (p.target ? p.count + ' / ' + p.target : p.count) + ' ' + t('rows') + ' · ' + fmtDur(p.totalMs);
+      meta.textContent = (p.target ? p.count + ' / ' + p.target + ' ' + t('rows') : nRows(p.count)) + ' · ' + fmtDur(p.totalMs);
       const num = document.createElement('span'); num.className = 'pc-count'; num.textContent = p.count;
       a.append(num, name, meta);
       if (p.target) {
@@ -135,9 +139,15 @@
   function renderHints() {
     const standalone = navigator.standalone || matchMedia('(display-mode: standalone)').matches;
     const ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const android = /Android/i.test(navigator.userAgent);
     const ih = $('#install-hint');
-    if (ios && !standalone && !localStorage.getItem('toerteller.hideInstall')) {
-      ih.innerHTML = '<span>' + t('installHint') + '</span>';
+    if ((ios || android) && !standalone && !localStorage.getItem('toerteller.hideInstall')) {
+      ih.innerHTML = '<span>' + t(ios ? 'installHint' : 'installHintAndroid') + '</span>';
+      if (installPrompt) {
+        const ib = document.createElement('button'); ib.className = 'btn btn-small'; ib.textContent = t('install');
+        ib.onclick = () => { installPrompt.prompt(); installPrompt.userChoice.finally(() => { installPrompt = null; renderHints(); }); };
+        ih.append(ib);
+      }
       const x = document.createElement('button'); x.className = 'btn btn-small'; x.textContent = t('dismiss');
       x.onclick = () => { localStorage.setItem('toerteller.hideInstall', '1'); ih.hidden = true; };
       ih.append(x); ih.hidden = false;
@@ -160,6 +170,7 @@
     currentId = id;
     const p = S.find(id);
     $('#p-notes').value = p.notes;
+    markActivity();
     renderProject(); show('view-project');
     startTick(); requestWake();
   }
@@ -198,11 +209,11 @@
       [t('statTotal'), fmtDur(totalMs(p))],
       [t('statAvg'), fmtDur(st.avg)],
       [t('statLast'), fmtDur(st.last)],
-      [t('statToday'), st.todayRows + ' ' + t('rows') + ' · ' + fmtDur(st.todayMs)]
+      [t('statToday'), nRows(st.todayRows) + ' · ' + fmtDur(st.todayMs)]
     ];
     if (p.target && p.count < p.target) {
       const left = p.target - p.count;
-      rows.push([t('statLeft'), st.avg ? t('statLeftVal', { rows: left, time: fmtDur(st.avg * left) }) : left + ' ' + t('rows')]);
+      rows.push([t('statLeft'), st.avg ? t('statLeftVal', { rows: left, time: fmtDur(st.avg * left) }) : nRows(left)]);
     }
     const dl = $('#p-stats'); dl.innerHTML = '';
     rows.forEach(([k, v]) => {
@@ -213,7 +224,53 @@
     });
   }
 
-  function startTick() { stopTick(); let n = 0; tickTimer = setInterval(() => { renderClock(); if (++n % 15 === 0) renderStats(); }, 1000); }
+  function startTick() { stopTick(); let n = 0; tickTimer = setInterval(() => { renderClock(); checkIdle(); if (++n % 15 === 0) renderStats(); }, 1000); }
+
+  // ---------- inactivity reminder and auto-pause ----------
+  function markActivity() {
+    lastActivity = Date.now();
+    if (idleAlertAt) { idleAlertAt = 0; document.body.classList.remove('idle-alert'); $('#idle-banner').hidden = true; }
+  }
+  function checkIdle() {
+    const p = S.find(currentId); const st = S.state.settings;
+    if (!p || !p.timer.running || !st.idleRemind) return;
+    const now = Date.now(), remindMs = st.idleRemind * 60000;
+    if (!idleAlertAt && now - lastActivity >= remindMs) {
+      idleAlertAt = now;
+      if (st.idleFlash) document.body.classList.add('idle-alert');
+      const b = $('#idle-banner'); b.textContent = t('idleAsk', { m: st.idleRemind }); b.hidden = false;
+      if (st.idleSound) beep();
+      if (st.idleVibrate && navigator.vibrate) navigator.vibrate([250, 120, 250]);
+    }
+    if (idleAlertAt && st.idlePause && now - idleAlertAt >= st.idlePause * 60000) {
+      // Pause, and don't count the minutes since the reminder went off.
+      const at = idleAlertAt;
+      const seg = Math.max(0, at - p.timer.start);
+      p.timer.acc += seg; p.totalMs += seg; p.timer.running = false; p.timer.start = null;
+      S.touch(p);
+      idleAlertAt = 0; document.body.classList.remove('idle-alert'); $('#idle-banner').hidden = true;
+      toast(t('idlePaused'), () => { $('#toast').hidden = true; });
+      renderProject();
+    }
+  }
+  function unlockAudio() {
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+    } catch (e) { audioCtx = null; }
+  }
+  function beep() {
+    if (!audioCtx) return;
+    try {
+      [0, 0.28].forEach((d, i) => {
+        const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+        o.type = 'sine'; o.frequency.value = i ? 880 : 660;
+        const t0 = audioCtx.currentTime + d;
+        g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(0.4, t0 + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.22);
+        o.connect(g).connect(audioCtx.destination); o.start(t0); o.stop(t0 + 0.25);
+      });
+    } catch (e) { /* no sound */ }
+  }
   function stopTick() { if (tickTimer) clearInterval(tickTimer); tickTimer = null; }
 
   function plus() {
@@ -289,6 +346,12 @@
     $$('#set-lang button').forEach(b => b.classList.toggle('active', b.dataset.value === st.lang));
     $$('#set-theme button').forEach(b => b.classList.toggle('active', b.dataset.value === st.theme));
     $('#set-wake').checked = !!st.wake;
+    $('#set-idle-remind').value = String(st.idleRemind);
+    $('#set-idle-pause').value = String(st.idlePause);
+    $('#set-idle-flash').checked = !!st.idleFlash;
+    $('#set-idle-sound').checked = !!st.idleSound;
+    $('#set-idle-vibrate').checked = !!st.idleVibrate;
+    $('#idle-details').hidden = !st.idleRemind;
     $('#last-backup').textContent = S.state.lastBackup ? t('lastBackup', { date: fmtDate(S.state.lastBackup) }) : t('neverBackup');
     show('view-settings');
   }
@@ -354,11 +417,23 @@
   $$('#set-lang button').forEach(b => b.onclick = () => { S.state.settings.lang = b.dataset.value; S.save(); applyLanguage(); openSettings(); });
   $$('#set-theme button').forEach(b => b.onclick = () => { S.state.settings.theme = b.dataset.value; S.save(); applyTheme(); openSettings(); });
   $('#set-wake').onchange = (e) => { S.state.settings.wake = e.target.checked; S.save(); };
+  $('#set-idle-remind').onchange = (e) => { S.state.settings.idleRemind = +e.target.value; S.save(); openSettings(); };
+  $('#set-idle-pause').onchange = (e) => { S.state.settings.idlePause = +e.target.value; S.save(); };
+  [['#set-idle-flash', 'idleFlash'], ['#set-idle-sound', 'idleSound'], ['#set-idle-vibrate', 'idleVibrate']].forEach(([sel, key]) => {
+    $(sel).onchange = (e) => { S.state.settings[key] = e.target.checked; S.save(); if (key === 'idleSound' && e.target.checked) { unlockAudio(); beep(); } };
+  });
+  $('#set-idle-vibrate-row').hidden = !('vibrate' in navigator);
+  // Any touch in the counter screen counts as "still knitting".
+  $('#view-project').addEventListener('pointerdown', () => { markActivity(); unlockAudio(); });
+
+  // Android/Chrome: offer its own install button
+  let installPrompt = null;
+  window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installPrompt = e; if (!$('#view-home').hidden) renderHints(); });
 
   window.addEventListener('hashchange', route);
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) { pauseAll(); releaseWake(); }
-    else if (currentId) { renderProject(); requestWake(); }
+    else if (currentId) { markActivity(); renderProject(); requestWake(); }
   });
   window.addEventListener('pagehide', pauseAll);
 

@@ -2,7 +2,7 @@
 
 ## Contents
 
-1. [Installing on the iPhone](#installing-on-the-iphone)
+1. [Installing on the iPhone](#installing-on-the-iphone) or [Android](#installing-on-android)
 2. [Projects](#projects)
 3. [Counting rows](#counting-rows)
 4. [The timer and statistics](#the-timer-and-statistics)
@@ -20,8 +20,15 @@
 2. Tap the **Share** button (square with an arrow) → **Add to Home Screen** → **Add**.
 3. Start Toerteller from the new icon. It opens full screen and works without internet.
 
-Until it is on the Home Screen, the app shows a tip about this. Installing matters: iOS may clear the data of websites
+Until it is on the Home Screen, the app shows a tip about this (on iPhone and Android). Installing matters: iOS may clear the data of websites
 that are not used for a while, but not of apps on the Home Screen.
+
+## Installing on Android
+
+1. Open <https://arthur-de-partuur.github.io/Toerteller/> in **Chrome**.
+2. Tap **⋮** (top right) → **Install app** (on some phones: **Add to Home screen**). Chrome sometimes offers an
+   *Install* button itself; the app's tip on the home screen then has an **Install** button too.
+3. Start Toerteller from the new icon.
 
 ## Projects
 
@@ -46,6 +53,12 @@ that are not used for a while, but not of apps on the Home Screen.
 * It **pauses** by itself when you go back to the project list, switch to another app or lock the phone. Tap
   **Start** to continue, or just tap the counter when the row is done.
 * **Pause** stops it by hand (e.g. for a cup of tea).
+* **Still knitting?** If the timer is running and you haven't touched the screen for a while (default 5 minutes),
+  the app gives one signal: the counter **flashes**, a short **sound** plays and the phone **vibrates** (vibrating
+  works on Android only; iPhone doesn't allow it for web apps, and the sound is silent when the iPhone's mute switch
+  is on). Tap anywhere to continue. If you don't respond, the timer **pauses by itself** after another few minutes
+  (default 5), and the minutes after the signal are not counted.
+  Rows that take longer than 5 minutes? Set a longer time in Settings.
 * Statistics under the counter:
   * **Total knitting time**: all timed time for this project.
   * **Average per row** and **Last row**.
@@ -60,6 +73,8 @@ Gear icon on the home screen.
 * **Language**: Automatic (follows the iPhone), Nederlands or English.
 * **Colours**: Automatic (follows the iPhone's dark mode), Light or Dark.
 * **Keep screen on**: the screen doesn't switch off while a project is open (needs iOS 16.4 or newer).
+* **Still knitting?**: *Signal after* (Off, 2–30 min), *Then pause after* (Never, 1–15 min), and which signals:
+  Flash, Sound, Vibrate (Vibrate is only shown on phones that support it).
 
 ## Backup and moving to a new phone
 

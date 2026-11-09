@@ -61,6 +61,8 @@
 
       <div class="repeat" id="p-repeat" hidden></div>
 
+      <div class="idle-banner" id="idle-banner" role="alert" hidden></div>
+
       <div class="row-actions">
         <button class="btn btn-ghost" id="btn-minus" data-i18n="undo"></button>
         <div class="timer">
@@ -138,6 +140,28 @@
           <span><strong data-i18n="keepAwake"></strong><small data-i18n="keepAwakeHelp"></small></span>
           <input type="checkbox" id="set-wake" class="switch">
         </label>
+      </div>
+
+      <div class="card">
+        <h2 data-i18n="idleTitle"></h2>
+        <p class="muted" data-i18n="idleHelp"></p>
+        <label class="select-row"><span data-i18n="idleRemind"></span>
+          <select id="set-idle-remind">
+            <option value="0" data-i18n="off"></option>
+            <option value="2">2 min</option><option value="3">3 min</option><option value="5">5 min</option>
+            <option value="10">10 min</option><option value="15">15 min</option><option value="20">20 min</option><option value="30">30 min</option>
+          </select></label>
+        <div id="idle-details">
+          <label class="select-row"><span data-i18n="idlePause"></span>
+            <select id="set-idle-pause">
+              <option value="0" data-i18n="never"></option>
+              <option value="1">1 min</option><option value="2">2 min</option><option value="5">5 min</option>
+              <option value="10">10 min</option><option value="15">15 min</option>
+            </select></label>
+          <label class="check-row"><input type="checkbox" id="set-idle-flash"> <span data-i18n="idleFlash"></span></label>
+          <label class="check-row"><input type="checkbox" id="set-idle-sound"> <span data-i18n="idleSound"></span></label>
+          <label class="check-row" id="set-idle-vibrate-row"><input type="checkbox" id="set-idle-vibrate"> <span data-i18n="idleVibrate"></span></label>
+        </div>
       </div>
 
       <div class="card">

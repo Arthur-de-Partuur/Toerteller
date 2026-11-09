@@ -29,7 +29,14 @@ self.TT_TEXT = {
     added: 'Toer {n}', removed: 'Toer teruggezet naar {n}', paused: 'Timer gepauzeerd',
     updateReady: 'Nieuwe versie klaar. Tik om te verversen.',
     footerRights: '© 2026 Arthur-de-Partuur. Alle rechten voorbehouden. Alleen voor persoonlijk gebruik met toestemming; niet voor commercieel gebruik.',
-    published: 'gepubliceerd'
+    published: 'gepubliceerd',
+    installHintAndroid: 'Tip: open het menu <b>⋮</b> in Chrome en kies <b>App installeren</b>. Dan werkt Toerteller als een app, ook offline, en blijven je projecten bewaard.',
+    install: 'Installeren', unreleased: 'ontwikkelversie, nog niet gepubliceerd',
+    idleTitle: 'Nog aan het breien?', idleHelp: 'Als de timer loopt en je een tijd niet op het scherm tikt, krijg je een seintje. Reageer je niet, dan pauzeert de timer vanzelf en tellen de minuten na het seintje niet mee.',
+    idleRemind: 'Seintje na', idlePause: 'Daarna pauzeren na', off: 'Uit', never: 'Nooit',
+    idleFlash: 'Knipperen', idleSound: 'Geluidje', idleVibrate: 'Trillen',
+    idleAsk: 'Al {m} min geen tik. Nog aan het breien? Tik ergens om door te gaan.',
+    idlePaused: 'Timer automatisch gepauzeerd. Tik op Start of op de teller om verder te gaan.'
   },
   en: {
     settings: 'Settings', back: 'Back', edit: 'Edit',
@@ -60,6 +67,13 @@ self.TT_TEXT = {
     added: 'Row {n}', removed: 'Row set back to {n}', paused: 'Timer paused',
     updateReady: 'New version ready. Tap to refresh.',
     footerRights: '© 2026 Arthur-de-Partuur. All rights reserved. Personal use with permission only; not for commercial use.',
-    published: 'published'
+    published: 'published',
+    installHintAndroid: 'Tip: open the <b>⋮</b> menu in Chrome and choose <b>Install app</b>. Toerteller then works like an app, also offline, and your projects stay saved.',
+    install: 'Install', unreleased: 'development build, not yet published',
+    idleTitle: 'Still knitting?', idleHelp: 'If the timer is running and you haven\u2019t touched the screen for a while, you get a signal. If you don\u2019t respond, the timer pauses by itself and the minutes after the signal are not counted.',
+    idleRemind: 'Signal after', idlePause: 'Then pause after', off: 'Off', never: 'Never',
+    idleFlash: 'Flash', idleSound: 'Sound', idleVibrate: 'Vibrate',
+    idleAsk: 'No tap for {m} min. Still knitting? Tap anywhere to continue.',
+    idlePaused: 'Timer paused automatically. Tap Start or the counter to continue.'
   }
 };

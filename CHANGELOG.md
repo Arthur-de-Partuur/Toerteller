@@ -3,6 +3,16 @@
 Every change to Toerteller is recorded here. New changes are collected under **Unreleased** until a version is
 published (see [How-To → Publishing a new version](docs/HOW-TO.md#publishing-a-new-version)).
 
+## Unreleased
+
+* **Still knitting?** If the timer runs and you don't touch the screen for a while (default 5 min), the app flashes,
+  plays a short sound and vibrates (Android) once. Without a response it pauses the timer by itself after another
+  few minutes (default 5) and doesn't count the minutes after the signal. All of this can be set in Settings.
+* Android: install tip on the home screen (with Chrome's own *Install* button when offered) and Android steps in the
+  How-To and README.
+* "1 toer / 1 row" instead of "1 toeren / 1 rows".
+* Footer shows *development build, not yet published* until a version is published.
+
 ## 0.1.0-alpha (2026-11-09)
 
 First version.
