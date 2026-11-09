@@ -148,9 +148,9 @@
     ps.forEach(p => {
       const tt = projTotals(p), ty = typeOf(p);
       const meta = ty.icon + ' ' + ty[lang] + ' · ' + (tt.n > 1 ? t('partsDone', { d: tt.done, n: tt.n }) + ' · ' : '') + fmtDur(tt.ms);
-      const li = document.createElement('li');
-      li.append(card('#/p/' + p.id, tt.rows, p.name, meta, tt.target ? tt.rows / tt.target : null));
-      list.append(li);
+      list.append(listItem(card('#/p/' + p.id, tt.rows, p.name, meta, tt.target ? tt.rows / tt.target : null), {
+        title: p.name, onDelete: () => deleteProjectUndo(p), actions: projectActions(p)
+      }));
     });
     const tot = $('#home-totals');
     if (ps.length) {
@@ -198,10 +198,13 @@
     $('#pp-totals').textContent = ty.icon + ' ' + ty[lang] + ' · ' + t('partsDone', { d: tt.done, n: tt.n }) + ' · ' + nRows(tt.rows) + ' · ' + fmtDur(tt.ms);
     const list = $('#part-list'); list.innerHTML = ''; list.classList.toggle('reordering', reorderMode);
     p.parts.forEach((x, i) => {
-      const li = document.createElement('li'); li.className = 'part-item' + (x.done ? ' is-done' : '');
-      const meta = (x.done ? '✓ ' + t('finished') + ' · ' : '') + (x.target ? x.count + ' / ' + x.target + ' ' + t('rows') : nRows(x.count)) + ' · ' + fmtDur(x.totalMs);
+      const meta = (x.done ? '✓ ' + t('finished') + ' · ' : '') + (x.target ? x.count + ' / ' + x.target + ' ' + t('rows') : nRows(x.count) + ' · ' + t('noTarget')) + ' · ' + fmtDur(x.totalMs);
       const c = card(reorderMode ? null : '#/c/' + p.id + '/' + x.id, x.count, x.name, meta, x.target ? x.count / x.target : null);
-      li.append(c);
+      const li = reorderMode ? document.createElement('li') : listItem(c, {
+        title: x.name, onDelete: p.parts.length > 1 ? () => deletePartUndo(p, x) : null, actions: partActions(p, x)
+      });
+      li.classList.add('part-item'); if (x.done) li.classList.add('is-done');
+      if (reorderMode) li.append(c);
       if (reorderMode) {
         const box = document.createElement('div'); box.className = 'move-btns';
         [['↑', -1], ['↓', 1]].forEach(([lbl, d]) => {
@@ -237,6 +240,7 @@
     $('#p-count').textContent = x.count;
     $('#p-target').textContent = x.target ? t('of') + ' ' + x.target : '';
     $('#p-progress').hidden = !x.target;
+    $('#p-set-target').hidden = !!x.target;
     if (x.target) $('#p-progress-bar').style.width = Math.min(100, x.count / x.target * 100) + '%';
     const rep = $('#p-repeat');
     if (x.repeat && x.count > 0) {
@@ -395,7 +399,7 @@
     npType = key;
     const ty = self.TT_TYPES.find(x => x.key === key);
     const custom = npItems.filter(x => x.custom);
-    npItems = ty.parts.map(x => ({ name: x[lang], on: x.on })).concat(custom);
+    npItems = ty.parts.map(x => ({ name: x[lang], on: x.on, target: 0 })).concat(custom);
     $('#np-pair-row').hidden = !ty.pair;
     $('#np-pair').checked = !!ty.pair;
     renderTypes(); renderNpItems();
@@ -408,6 +412,11 @@
       const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = it.on; cb.onchange = () => { it.on = cb.checked; };
       const sp = document.createElement('span'); sp.textContent = it.name;
       lab.append(cb, sp); li.append(lab);
+      const rows = document.createElement('input'); rows.type = 'number'; rows.min = '0'; rows.max = '99999'; rows.inputMode = 'numeric';
+      rows.className = 'mini-num'; rows.placeholder = t('rowsShort'); rows.value = it.target || '';
+      rows.setAttribute('aria-label', t('target') + ': ' + it.name);
+      rows.oninput = () => { it.target = parseInt(rows.value, 10) || 0; if (it.target && !it.on) { it.on = true; cb.checked = true; } };
+      li.append(rows);
       if (it.custom) {
         const x = document.createElement('button'); x.type = 'button'; x.className = 'btn btn-small remove-btn'; x.textContent = '✕';
         x.setAttribute('aria-label', t('remove')); x.onclick = () => { npItems.splice(i, 1); renderNpItems(); };
@@ -426,11 +435,12 @@
     ev.preventDefault();
     const name = $('#np-name').value.trim() || t('newTitle');
     if (npEditing) { npEditing.name = name; S.touch(npEditing); history.replaceState(null, '', '#/p/' + npEditing.id); return route(); }
-    let names = npItems.filter(x => x.on).map(x => x.name);
+    let names = npItems.filter(x => x.on).map(x => ({ name: x.name, target: x.target || 0 }));
     if ($('#np-pair').checked && !$('#np-pair-row').hidden && names.length) {
-      names = names.map(nm => nm + ' · ' + t('left')).concat(names.map(nm => nm + ' · ' + t('right')));
+      const side = (s) => names.map(x => ({ name: x.name + ' · ' + s, target: x.target }));
+      names = side(t('left')).concat(side(t('right')));
     }
-    if (!names.length) names = [S.mainName()];
+    if (!names.length) names = [{ name: S.mainName() }];
     const p = S.newProject({ name, type: npType }, names);
     npItems = [];
     history.replaceState(null, '', '#/p/' + p.id); route();
@@ -558,6 +568,113 @@
     el.onclick = onClick || null; el.classList.toggle('clickable', !!onClick);
     clearTimeout(toastT); if (!onClick) toastT = setTimeout(() => { el.hidden = true; }, 2200);
   }
+  // Message with an action button (e.g. Undo), visible for a few seconds.
+  function toastAction(msg, label, fn, ms) {
+    const el = $('#toast'); el.innerHTML = ''; el.hidden = false; el.onclick = null; el.classList.remove('clickable');
+    const s = document.createElement('span'); s.textContent = msg;
+    const b = document.createElement('button'); b.className = 'toast-btn'; b.textContent = label;
+    b.onclick = () => { el.hidden = true; clearTimeout(toastT); fn(); };
+    el.append(s, b);
+    clearTimeout(toastT); toastT = setTimeout(() => { el.hidden = true; }, ms || 6000);
+  }
+
+  // ---------- list items: swipe left to delete, long-press or ⋯ for options ----------
+  const SWIPE_OPEN = 116;
+  let openSwipe = null;          // the list item that is swiped open
+  function closeSwipe() { if (openSwipe) { openSwipe.querySelector('.item-front').style.transform = ''; openSwipe.classList.remove('swiped'); openSwipe = null; } }
+  function listItem(cardEl, opt) {
+    const li = document.createElement('li'); li.className = 'item';
+    const front = document.createElement('div'); front.className = 'item-front';
+    const more = document.createElement('button'); more.className = 'more-btn'; more.type = 'button'; more.textContent = '⋯';
+    more.setAttribute('aria-label', t('options')); more.onclick = (e) => { e.preventDefault(); openSheet(opt.title, opt.actions); };
+    front.append(cardEl, more);
+    if (opt.onDelete) {
+      const back = document.createElement('div'); back.className = 'item-back';
+      const del = document.createElement('button'); del.type = 'button'; del.className = 'swipe-del'; del.textContent = t('delete');
+      del.onclick = () => { closeSwipe(); opt.onDelete(); };
+      back.append(del); li.append(back);
+    }
+    li.append(front);
+    let x0 = 0, y0 = 0, dx = 0, dragging = false, moved = false, base = 0, pressT = null, longPressed = false;
+    front.addEventListener('touchstart', (e) => {
+      const tt = e.touches[0]; x0 = tt.clientX; y0 = tt.clientY; dx = 0; dragging = false; moved = false; longPressed = false;
+      base = li.classList.contains('swiped') ? -SWIPE_OPEN : 0;
+      if (openSwipe && openSwipe !== li) closeSwipe();
+      clearTimeout(pressT);
+      pressT = setTimeout(() => { if (!moved) { longPressed = true; if (navigator.vibrate) navigator.vibrate(15); openSheet(opt.title, opt.actions); } }, 550);
+    }, { passive: true });
+    front.addEventListener('touchmove', (e) => {
+      const tt = e.touches[0]; const mx = tt.clientX - x0, my = tt.clientY - y0;
+      if (Math.abs(mx) > 8 || Math.abs(my) > 8) { moved = true; clearTimeout(pressT); }
+      if (!opt.onDelete) return;
+      if (!dragging && Math.abs(mx) > 12 && Math.abs(mx) > Math.abs(my) * 1.5) dragging = true;
+      if (dragging) {
+        li.classList.add('swiping');
+        dx = Math.max(-SWIPE_OPEN - 30, Math.min(0, base + mx));
+        front.style.transition = 'none'; front.style.transform = 'translateX(' + dx + 'px)';
+        if (e.cancelable) e.preventDefault();
+      }
+    }, { passive: false });
+    front.addEventListener('touchend', (e) => {
+      clearTimeout(pressT);
+      if (longPressed && e.cancelable) e.preventDefault();   // no click after the long-press
+      if (!dragging) return;
+      li.classList.remove('swiping');
+      front.style.transition = '';
+      if (dx < -SWIPE_OPEN / 2) { front.style.transform = 'translateX(' + -SWIPE_OPEN + 'px)'; li.classList.add('swiped'); openSwipe = li; }
+      else { front.style.transform = ''; li.classList.remove('swiped'); if (openSwipe === li) openSwipe = null; }
+    });
+    front.addEventListener('touchcancel', () => clearTimeout(pressT));
+    front.addEventListener('contextmenu', (e) => e.preventDefault());
+    // A tap right after a swipe or long-press must not open the project.
+    front.addEventListener('click', (e) => {
+      if (moved || longPressed || li.classList.contains('swiped')) { e.preventDefault(); if (li.classList.contains('swiped') && !moved) closeSwipe(); }
+    }, true);
+    return li;
+  }
+  document.addEventListener('touchstart', (e) => { if (openSwipe && !openSwipe.contains(e.target)) closeSwipe(); }, { passive: true });
+
+  // Options sheet
+  let sheetOpenedAt = 0;
+  function openSheet(title, actions) {
+    const sh = $('#sheet'); $('#sheet-title').textContent = title;
+    const box = $('#sheet-actions'); box.innerHTML = '';
+    actions.filter(Boolean).forEach(a => {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'sheet-btn' + (a.danger ? ' danger' : ''); b.textContent = a.label;
+      b.onclick = () => { if (Date.now() - sheetOpenedAt < 350) return; closeSheet(); a.run(); };
+      box.append(b);
+    });
+    sh.hidden = false; sheetOpenedAt = Date.now(); requestAnimationFrame(() => sh.classList.add('open'));
+  }
+  function closeSheet() { const sh = $('#sheet'); sh.classList.remove('open'); sh.hidden = true; }
+  function projectActions(p) {
+    return [
+      { label: t('open'), run: () => go('#/p/' + p.id) },
+      { label: t('rename'), run: () => go('#/pedit/' + p.id) },
+      { label: t('deleteProject'), danger: true, run: () => deleteProjectUndo(p) }
+    ];
+  }
+  function partActions(p, x) {
+    return [
+      { label: t('open'), run: () => go('#/c/' + p.id + '/' + x.id) },
+      { label: t('editPartAction'), run: () => go('#/part/' + p.id + '/' + x.id) },
+      { label: x.done ? t('markNotDone') : t('markDone'), run: () => { x.done = !x.done; S.touch(p); openParts(p); } },
+      { label: t('copyPart'), run: () => { editProject = p; editing = x; copyPart(); } },
+      p.parts.length > 1 ? { label: t('deletePart'), danger: true, run: () => deletePartUndo(p, x) } : null
+    ];
+  }
+  function deleteProjectUndo(p) {
+    const i = S.state.projects.indexOf(p); if (i < 0) return;
+    p.parts.forEach(pauseTimer);
+    S.state.projects.splice(i, 1); S.save(); renderHome();
+    toastAction(t('deleted', { name: p.name }), t('undoAction'), () => { S.state.projects.splice(i, 0, p); S.save(); route(); });
+  }
+  function deletePartUndo(p, x) {
+    const i = p.parts.indexOf(x); if (i < 0 || p.parts.length < 2) return;
+    pauseTimer(x);
+    p.parts.splice(i, 1); S.touch(p); openParts(p);
+    toastAction(t('deleted', { name: x.name }), t('undoAction'), () => { p.parts.splice(i, 0, x); S.touch(p); route(); });
+  }
 
   // ---------- events ----------
   $('#btn-settings').onclick = () => go('#/settings');
@@ -577,6 +694,11 @@
   $('#btn-delete-project').onclick = deleteProject;
   $('#btn-plus').addEventListener('click', plus);
   $('#btn-minus').onclick = minus;
+  $('#p-set-target').onclick = () => { go('#/part/' + cur.pid + '/' + cur.partId); setTimeout(() => $('#f-target').focus(), 80); };
+  $('#sheet').addEventListener('click', (e) => {
+    if (Date.now() - sheetOpenedAt < 350) return;          // ignore the tap that opened it
+    if (e.target.id === 'sheet' || e.target.id === 'sheet-cancel') closeSheet();
+  });
   $('#btn-timer').onclick = toggleTimer;
   $('#edit-form').addEventListener('submit', saveEdit);
   $('#btn-delete').onclick = deletePart;

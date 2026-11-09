@@ -53,14 +53,18 @@ Every part has its own counter, goal, pattern repeat, timer, statistics and note
    | Blanket | Squares / panels, Border |
    | Other | nothing: add your own |
 
-3. Untick what you don't need. Type your own part in the box below the list and tap **Add** (remove it again with ✕).
+3. Untick what you don't need. If you know it, fill in the **number of rows** in the box next to a part (optional;
+   you can also do it later). Type your own part in the box below the list and tap **Add** (remove it again with ✕).
 4. Socks and mittens: **Twice (left and right)** creates every part for both sides (*Boord · links* … *Boord · rechts*).
 5. Tap **Start project**. If no part is ticked, the project gets one part (*Hoofddeel*).
 
 ### Working with parts
 
 * Tap a project on the home screen to see its parts, with how many are finished and the total rows and time.
-* Tap a part to open its counter.
+* Tap a part to open its counter. No goal yet? Tap **＋ Set number of rows** under the counter.
+* **Swipe left** on a project or part to show a red **Delete** button. Or **long-press** it, or tap **⋯**, for a menu:
+  Open, Rename / Edit (rows, repeat …), Mark as finished, Make a copy, Delete. After deleting, tap **Undo** in the
+  message at the bottom within a few seconds to get it back.
 * **+ Add part**: tap a suggestion for this type of project, or type your own name. Optional: goal and repeat.
 * **Edit** a part (pencil in the counter): name, **number of rows (goal)**, **pattern repeat**, **current row**,
   and **This part is finished** (shown with ✓ and a green counter). Here you can also **Make a copy** (same goal,

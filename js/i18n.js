@@ -1,9 +1,12 @@
 // All texts in Dutch (nl) and English (en). Add a key to both languages.
 self.TT_TEXT = {
   nl: {
+    options: 'Opties', delete: 'Verwijderen', open: 'Openen', rename: 'Naam wijzigen', editPartAction: 'Bewerken (aantal toeren, herhaling…)',
+    markDone: 'Markeren als klaar', markNotDone: 'Markeren als niet klaar', deleted: '"{name}" verwijderd', undoAction: 'Ongedaan maken',
+    cancel: 'Annuleren', rowsShort: 'toeren', noTarget: 'geen doel', setTarget: '＋ Aantal toeren instellen',
     addPart: '+ Onderdeel toevoegen', reorder: 'Volgorde aanpassen', reorderDone: 'Klaar met volgorde',
     projectName: 'Naam van het project', projectType: 'Wat ga je breien?', partsToKnit: 'Onderdelen',
-    partsHelp: 'Vink aan wat je gaat breien. Je kunt later altijd onderdelen toevoegen.',
+    partsHelp: 'Vink aan wat je gaat breien en vul, als je het weet, het aantal toeren in. Je kunt later altijd onderdelen toevoegen of aanpassen.',
     pairHelp: 'Twee keer (links en rechts)', customPart: 'Eigen onderdeel, bijv. Ceintuur', add: 'Toevoegen',
     suggestions: 'Kies een onderdeel of typ een eigen naam', partName: 'Naam van het onderdeel', partPlaceholder: 'Bijv. Mouw links',
     partDone: 'Dit onderdeel is klaar', copyPart: 'Kopie maken (bijv. voor de tweede mouw)', deletePart: 'Onderdeel verwijderen',
@@ -53,9 +56,12 @@ self.TT_TEXT = {
     idlePaused: 'Timer automatisch gepauzeerd. Tik op Start of op de teller om verder te gaan.'
   },
   en: {
+    options: 'Options', delete: 'Delete', open: 'Open', rename: 'Rename', editPartAction: 'Edit (number of rows, repeat…)',
+    markDone: 'Mark as finished', markNotDone: 'Mark as not finished', deleted: '"{name}" deleted', undoAction: 'Undo',
+    cancel: 'Cancel', rowsShort: 'rows', noTarget: 'no goal', setTarget: '＋ Set number of rows',
     addPart: '+ Add part', reorder: 'Change order', reorderDone: 'Done reordering',
     projectName: 'Project name', projectType: 'What are you knitting?', partsToKnit: 'Parts',
-    partsHelp: 'Tick what you are going to knit. You can always add parts later.',
+    partsHelp: 'Tick what you are going to knit and, if you know it, fill in the number of rows. You can always add or change parts later.',
     pairHelp: 'Twice (left and right)', customPart: 'Own part, e.g. Belt', add: 'Add',
     suggestions: 'Pick a part or type your own name', partName: 'Part name', partPlaceholder: 'E.g. Left sleeve',
     partDone: 'This part is finished', copyPart: 'Make a copy (e.g. for the second sleeve)', deletePart: 'Delete part',

@@ -75,6 +75,7 @@
         <span class="counter-hint" data-i18n="tapToAdd"></span>
       </button>
 
+      <button class="link-btn" id="p-set-target" type="button" hidden data-i18n="setTarget"></button>
       <div class="progress" id="p-progress" hidden><div class="progress-bar" id="p-progress-bar"></div></div>
 
       <div class="repeat" id="p-repeat" hidden></div>
@@ -250,6 +251,14 @@
   </div>
 
   <div class="toast" id="toast" role="status" hidden></div>
+
+  <div class="sheet" id="sheet" hidden>
+    <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+      <div class="sheet-title" id="sheet-title"></div>
+      <div class="sheet-actions" id="sheet-actions"></div>
+      <button class="sheet-btn sheet-cancel" id="sheet-cancel" type="button" data-i18n="cancel"></button>
+    </div>
+  </div>
 
   <script src="js/channel.js"></script>
   <script src="js/version.js"></script>

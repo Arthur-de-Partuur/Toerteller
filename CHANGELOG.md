@@ -25,6 +25,11 @@ published (see [How-To → Publishing a new version](docs/HOW-TO.md#publishing-a
   installs it in the background and restarts itself at a quiet moment (never while the row timer runs). Settings →
   Updates: switch automatic updating off (you then get a *tap to refresh* message), see the version and **Check for a
   new version now**. After an update the app says *Updated to version …*.
+* **Deleting made easy:** swipe a project or part to the left for a red *Delete* button, or long-press it (or tap ⋯)
+  for a menu: Open, Rename/Edit, Mark as finished, Make a copy, Delete. After deleting, *Undo* is available for a
+  few seconds.
+* **Number of rows when starting a project:** each part in the list has a *rows* box (optional).
+* Parts without a goal show *no goal*, and the counter shows **＋ Set number of rows**.
 * **Undo** now lets the row carry on: the row clock gets back the time of the undone row (it no longer restarts at
   0:00). The total knitting time never changes on undo.
 * "1 toer / 1 row" instead of "1 toeren / 1 rows".

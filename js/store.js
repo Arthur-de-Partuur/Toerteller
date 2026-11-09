@@ -101,7 +101,7 @@
     mainName,
     newPart: (fields) => sanitizePart(Object.assign({ id: uid() }, fields)),
     newProject(fields, partNames) {
-      const p = sanitizeProject(Object.assign({ id: uid(), parts: partNames.map(nm => ({ name: nm })) }, fields), 2, mainName());
+      const p = sanitizeProject(Object.assign({ id: uid(), parts: partNames.map(x => (typeof x === 'string' ? { name: x } : x)) }, fields), 2, mainName());
       state.projects.unshift(p); save(); return p;
     },
     find(id) { return state.projects.find(p => p.id === id); },
