@@ -114,7 +114,7 @@ Every part has its own counter, goal, pattern repeat, timer, statistics and note
 
 Gear icon on the home screen.
 
-* **Language**: Automatic (follows the iPhone), Nederlands or English.
+* **Language**: Automatic (follows the phone; languages the app does not have get English), Nederlands, English, Dansk, Deutsch, Norsk or Svenska. Part names you already created keep the name they were given.
 * **Colours**: Automatic (follows the iPhone's dark mode), Light or Dark.
 * **Keep screen on**: the screen doesn't switch off while a project is open (needs iOS 16.4 or newer).
 * **Still knitting?**: *Signal after* (Off, 2–30 min), *Then pause after* (Never, 1–15 min), and which signals:
@@ -183,8 +183,9 @@ Steps:
 | `css/style.css` | Look and feel (colours, layout). |
 | `js/app.js` | Screens, counter, timer, settings, backup. |
 | `js/store.js` | Storing projects on the phone; backup format. |
-| `js/i18n.js` | All texts in Dutch and English. |
-| `js/templates.js` | Project types and their usual parts (Dutch and English). |
+| `js/i18n.js` | All texts in Dutch and English, plus the jokes. |
+| `js/lang/*.js` | Danish, German, Norwegian and Swedish texts (same keys as `i18n.js`). |
+| `js/templates.js` | Project types and their usual parts (all six languages). |
 | `js/version.js` | Version number and date. |
 | `js/channel.js` | Live app or test copy (rewritten by `tools/build-pages.sh` for `/dev/`). |
 | `tools/build-pages.sh` | Builds the website (live + test copy) into the `gh-pages` branch. |

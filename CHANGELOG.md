@@ -5,6 +5,10 @@ published (see [How-To → Publishing a new version](docs/HOW-TO.md#publishing-a
 
 ## Unreleased
 
+* **Danish, German, Norwegian and Swedish.** All texts, project types, part names and the "finish early" jokes are now
+  available in Dansk, Deutsch, Norsk and Svenska as well. *Automatic* follows the phone's language (other languages
+  get English); Settings → Language now offers all seven choices. Knitting terms follow DROPS Design patterns; the
+  translations still need a check by native speakers.
 * **Projects with parts.** A project (e.g. *Trui voor Jan*) now consists of parts (back, front, left sleeve …), each
   with its own counter, goal, pattern repeat, timer, statistics and notes.
   * When starting a project, choose what you knit: Sweater, Cardigan, Socks, Hat, Mittens/gloves, Scarf, Shawl,

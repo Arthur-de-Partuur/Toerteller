@@ -2,7 +2,7 @@
 // Data shape (schema 2):
 // {
 //   format: 'toerteller', schema: 2,
-//   settings: { lang: 'auto'|'nl'|'en', theme: 'auto'|'light'|'dark', wake: bool,
+//   settings: { lang: 'auto'|'nl'|'en'|'da'|'de'|'no'|'sv', theme: 'auto'|'light'|'dark', wake: bool,
 //               idleRemind: minutes (0 = off), idlePause: minutes after the reminder (0 = never),
 //               idleFlash, idleSound, idleVibrate: bool, autoUpdate: bool },
 //   lastBackup: ISO date | null,
@@ -76,11 +76,18 @@
     return out;
   }
 
+  const MAIN = { nl: 'Hoofddeel', en: 'Main part', da: 'Hoveddel', de: 'Hauptteil', no: 'Hoveddel', sv: 'Huvuddel' };
   function mainName() {
     let pref = 'auto';
     try { pref = JSON.parse(localStorage.getItem(KEY)).settings.lang || 'auto'; } catch (e) { /* none yet */ }
-    const nl = pref === 'nl' || (pref !== 'en' && (navigator.language || 'nl').toLowerCase().startsWith('nl'));
-    return nl ? 'Hoofddeel' : 'Main part';
+    if (MAIN[pref]) return MAIN[pref];
+    const list = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || 'en'];
+    for (const l of list) {
+      let c = String(l).toLowerCase().slice(0, 2);
+      if (c === 'nb' || c === 'nn') c = 'no';
+      if (MAIN[c]) return MAIN[c];
+    }
+    return MAIN.en;
   }
 
   let state;

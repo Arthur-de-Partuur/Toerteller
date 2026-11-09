@@ -246,3 +246,4 @@ body.channel-dev::before { content: "TEST"; position: fixed; top: env(safe-area-
 
 /* footer */
 .footer { margin-top: auto; padding-top: 18px; font-size: 11px; color: var(--muted); text-align: center; line-height: 1.5; }
+.select-row .select-title { font-weight: 700; }
