@@ -53,8 +53,6 @@ Every part has its own counter, goal, pattern repeat, timer, statistics and note
    |---|---|
    | Sweater | Back, Front, Left sleeve, Right sleeve, Neckband (+ Yoke, Collar, Hood, Pockets) |
    | Cardigan | Back, Left front, Right front, Left sleeve, Right sleeve, Button band (+ Collar, Yoke, Hood, Pockets) |
-   | Sweater in the round | Knitted in one piece (choose *From the top down* or *From the bottom up*; the order of the parts follows): Neckband, Yoke, Body, Bottom rib, Left sleeve, Right sleeve (+ Collar, Hood) |
-   | Cardigan in one piece | Neckband, Yoke, Body, Bottom rib, Left sleeve, Right sleeve, Button band (+ Collar, Hood) |
    | Socks | Cuff, Leg, Heel flap, Heel turn, Gusset, Foot, Toe |
    | Hat | Brim, Body, Crown |
    | Mittens / gloves | Cuff, Hand, Thumb (+ Fingers) |
@@ -63,6 +61,11 @@ Every part has its own counter, goal, pattern repeat, timer, statistics and note
    | Blanket | Squares / panels, Border |
    | Other | nothing: add your own |
 
+   *Sweater* and *Cardigan* also ask how they are knitted: **In pieces** (back, fronts and sleeves separately) or
+   **In the round** / **In one piece** on a circular needle. In one piece you get the phases as parts (Neckband, Yoke,
+   Body, Bottom rib, Left sleeve, Right sleeve; a cardigan also gets Button band) and choose **From the top down** or
+   **From the bottom up**. Socks: **Cuff down** or **Toe up**. Hat: **Brim up** or **Crown down**. The parts follow
+   the chosen order.
 3. Untick what you don't need. If you know it, fill in the **number of rows** in the box next to a part (optional;
    you can also do it later). Type your own part in the box below the list and tap **Add** (remove it again with ✕).
 4. Socks and mittens: **Twice (left and right)** creates every part for both sides (*Boord · links* … *Boord · rechts*).

@@ -5,10 +5,12 @@ published (see [How-To → Publishing a new version](docs/HOW-TO.md#publishing-a
 
 ## Unreleased
 
-* Two new project types for garments knitted in one piece on a circular needle: **Sweater in the round** (neckband,
-  yoke, body, bottom rib, sleeves) and **Cardigan in one piece** (same, plus button band). The phases are ready-made
-  parts in knitting order. Choose **From the top down** or **From the bottom up** (e.g. an Icelandic sweater: body
-  and sleeves first, then the yoke) and the parts follow that order.
+* **Knitted in pieces or in one piece.** *Sweater* now asks **In pieces** or **In the round**, *Cardigan* asks **In pieces**
+  or **In one piece**. In one piece, the phases are ready-made parts (neckband, yoke, body, bottom rib, sleeves; plus
+  button band for a cardigan) and you choose **From the top down** or **From the bottom up** (e.g. an Icelandic
+  sweater: body and sleeves first, then the yoke); the parts follow that order.
+* **Socks** can be knitted **cuff down** or **toe up**, a **hat** from the brim or from the crown: the parts follow the
+  chosen direction.
 * **Easier installing.** The tip on the home screen now has a **Show me how** button with the exact steps for your phone,
   with the real button icons: iPhone with iOS 26 (⋯ → Share → Add to Home Screen), older iPhones, Android, and a
   *copy link* for people who opened the link inside WhatsApp or another app (that only works in Safari). On iPhone a
