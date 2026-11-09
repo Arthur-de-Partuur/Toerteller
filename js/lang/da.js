@@ -11,7 +11,7 @@ self.TT_TEXT.da = {
   partDone: 'Denne del er færdig', copyPart: 'Lav en kopi (f.eks. til det andet ærme)', deletePart: 'Slet del',
   partsDone: '{d}/{n} dele færdige', finished: 'færdig', moveUp: 'Flyt op', moveDown: 'Flyt ned',
   statProject: 'Hele projektet',
-  finishBtn: '✓ Del færdig?', statsTitle: 'Tid og statistik', reopen: '↺ Alligevel ikke færdig', reopened: '"{name}" er åben igen',
+  finishBtn: '✓ Del færdig?', statsTitle: 'Tid og statistik', langSystem: 'Følg systemet (telefon)', reopen: '↺ Alligevel ikke færdig', reopened: '"{name}" er åben igen',
   rowsMissing: 'Stadig {n} af {of} pinde tilbage', finishAnyway: 'Færdig alligevel? Fortsæt med:', keepKnitting: 'Nej, jeg strikker lidt videre',
   finishPartTitle: 'Er "{name}" færdig?',
   targetReachedTitle: '🎉 {n} pinde nået', targetReachedMsg: 'Er "{name}" færdig?',

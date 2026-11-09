@@ -5,7 +5,8 @@ published (see [How-To → Publishing a new version](docs/HOW-TO.md#publishing-a
 
 ## Unreleased
 
-(nothing yet)
+* Settings → Language: the first choice now reads *Follow system (phone)*: the app uses the phone's language; below it you can pick a language
+  yourself.
 
 ## 0.2.0-alpha (2026-11-09)
 

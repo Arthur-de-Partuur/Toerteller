@@ -251,3 +251,5 @@ body.channel-dev::before { content: "TEST"; position: fixed; top: env(safe-area-
 .stats-box summary::-webkit-details-marker { display: none; }
 .stats-box summary::after { content: ''; width: 8px; height: 8px; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: rotate(-45deg); margin-left: auto; margin-right: 6px; transition: transform .15s; }
 .stats-box[open] summary::after { transform: rotate(45deg); }
+.select-stack { flex-direction: column; align-items: stretch; gap: 8px; }
+.select-stack select { width: 100%; max-width: 100%; min-width: 0; }
