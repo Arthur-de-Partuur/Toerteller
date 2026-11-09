@@ -124,11 +124,15 @@
         <div id="np-parts-wrap">
           <div class="field-label" data-i18n="partsToKnit"></div>
           <small class="help" data-i18n="partsHelp"></small>
-          <div id="np-dir-row" hidden>
+          <div id="np-style-row" class="np-choice" hidden>
             <small class="help" data-i18n="dirHelp"></small>
+            <div class="segmented" id="np-style"></div>
+          </div>
+          <div id="np-dir-row" class="np-choice" hidden>
+            <small class="help" data-i18n="dirOrder"></small>
             <div class="segmented" id="np-dir">
-              <button type="button" data-value="down" data-i18n="topDown"></button>
-              <button type="button" data-value="up" data-i18n="bottomUp"></button>
+              <button type="button" data-value="down"></button>
+              <button type="button" data-value="up"></button>
             </div>
           </div>
           <label class="check-row" id="np-pair-row"><input type="checkbox" id="np-pair"> <span data-i18n="pairHelp"></span></label>

@@ -461,8 +461,9 @@
   }
   function renderTypes() {
     const box = $('#np-types'); box.innerHTML = '';
-    self.TT_TYPES.forEach(ty => {
-      const b = document.createElement('button'); b.type = 'button'; b.className = 'type-btn' + (ty.key === npType ? ' active' : '');
+    const cur = self.TT_TYPES.find(x => x.key === npType) || {};
+    self.TT_TYPES.filter(ty => !ty.variantOf).forEach(ty => {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'type-btn' + (ty.key === npType || ty.key === cur.variantOf ? ' active' : '');
       const i = document.createElement('span'); i.className = 'type-icon'; i.textContent = ty.icon;
       const l = document.createElement('span'); l.textContent = ty[lang];
       b.append(i, l); b.onclick = () => selectType(ty.key);
@@ -488,7 +489,18 @@
     npDir = 'down';
     npItems = ty.parts.map((x, k) => ({ name: x[lang], on: x.on, target: 0, tpl: k })).concat(custom);
     $('#np-dir-row').hidden = !ty.bottomUp;
-    $$('#np-dir button').forEach(b => b.classList.toggle('active', b.dataset.value === npDir));
+    const dl = ty.dirLabels || ['topDown', 'bottomUp'];
+    $$('#np-dir button').forEach((b, k) => { b.textContent = t(dl[k]); b.classList.toggle('active', b.dataset.value === npDir); });
+    // Style (e.g. sweater in pieces / in the round): the base type and its variants
+    const base = ty.variantOf ? self.TT_TYPES.find(x => x.key === ty.variantOf) : ty;
+    const styles = [base].concat(self.TT_TYPES.filter(x => x.variantOf === base.key));
+    const sr = $('#np-style'); sr.innerHTML = '';
+    $('#np-style-row').hidden = styles.length < 2;
+    if (styles.length > 1) styles.forEach(st => {
+      const b = document.createElement('button'); b.type = 'button'; b.textContent = t(st.style);
+      b.classList.toggle('active', st.key === ty.key); b.onclick = () => { if (st.key !== npType) selectType(st.key); };
+      sr.append(b);
+    });
     $('#np-pair-row').hidden = !ty.pair;
     $('#np-pair').checked = !!ty.pair;
     renderTypes(); renderNpItems();

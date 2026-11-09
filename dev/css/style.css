@@ -288,6 +288,6 @@ body.no-time .row-actions { grid-template-columns: 1fr; }
 #install-hint { flex-wrap: wrap; }
 #install-hint span { flex: 1 1 100%; }
 #install-hint .btn-primary { flex: 1; }
-#np-dir-row { margin: 6px 0 10px; }
-#np-dir-row .help { display: block; margin-bottom: 6px; }
-#np-dir-row[hidden] { display: none; }
+.np-choice { margin: 6px 0 10px; }
+.np-choice .help { display: block; margin-bottom: 6px; }
+.np-choice[hidden] { display: none; }
