@@ -289,7 +289,9 @@
       list.append(li);
     });
     $('#btn-reorder').hidden = p.parts.length < 2;
-    $('#btn-reorder').textContent = reorderMode ? t('reorderDone') : t('reorder');
+    $('#btn-reorder').textContent = reorderMode ? t('orderDoneShort') : t('orderShort');
+    $('#btn-reorder').setAttribute('aria-label', reorderMode ? t('reorderDone') : t('reorder'));
+    $('#btn-reorder').classList.toggle('btn-primary', reorderMode);
     $('#btn-add-part').hidden = reorderMode;
     $('#reorder-hint').hidden = !reorderMode;
     show('view-parts');

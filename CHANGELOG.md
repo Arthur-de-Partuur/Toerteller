@@ -5,6 +5,8 @@ published (see [How-To → Publishing a new version](docs/HOW-TO.md#publishing-a
 
 ## Unreleased
 
+* Project screen: **＋ Part** and **⇅ Order** are now small buttons at the top, above the parts (no scrolling down
+  in a long list).
 * **Knitted in pieces or in one piece.** *Sweater* now asks **In pieces** or **In the round**, *Cardigan* asks **In pieces**
   or **In one piece**. In one piece, the phases are ready-made parts (neckband, yoke, body, bottom rib, sleeves; plus
   button band for a cardigan) and you choose **From the top down** or **From the bottom up** (e.g. an Icelandic
