@@ -2,9 +2,10 @@
 # Builds the website that GitHub Pages serves from the gh-pages branch:
 #   /            = the live app (branch main)
 #   /dev/        = the test app (branch dev), named "Toerteller TEST", with its own data
-# Usage (from the repo root, with main and dev fetched):  tools/build-pages.sh   then push gh-pages.
+# Usage:  tools/build-pages.sh          (fetches, builds and pushes gh-pages)
 set -euo pipefail
 ROOT=$(git rev-parse --show-toplevel)
+git -C "$ROOT" fetch -q origin '+refs/heads/*:refs/remotes/origin/*'
 OUT=$(mktemp -d)
 git -C "$ROOT" archive origin/main | tar -x -C "$OUT"
 mkdir -p "$OUT/dev"
@@ -29,4 +30,8 @@ find "$WT" -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
 cp -a "$OUT/." "$WT/"
 git -C "$WT" add -A
 git -C "$WT" commit -qm "Pages: main $(git -C "$ROOT" rev-parse --short origin/main), dev $(git -C "$ROOT" rev-parse --short origin/dev)" || echo "nothing changed"
-echo "Built in worktree $WT (branch gh-pages). Push with: git -C \"$WT\" push origin gh-pages"
+git -C "$WT" push -q origin gh-pages
+git -C "$ROOT" worktree remove --force "$WT"
+git -C "$ROOT" branch -q -D gh-pages 2>/dev/null || true
+rm -rf "$OUT"
+echo "gh-pages updated (main $(git -C "$ROOT" rev-parse --short origin/main), dev $(git -C "$ROOT" rev-parse --short origin/dev))"

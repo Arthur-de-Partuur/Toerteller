@@ -161,10 +161,10 @@ Steps:
 
 1. Work on `dev`; collect changes in `CHANGELOG.md` under **Unreleased**; the version in `js/version.js` is
    `X.Y.Z-dev` with date `unreleased`.
-2. After pushing `dev`: run `tools/build-pages.sh` and push `gh-pages` so the test copy is updated.
+2. After pushing `dev`: run `tools/build-pages.sh` (it builds and pushes `gh-pages`) so the test copy is updated.
 3. To publish: set the number and date in `js/version.js` (this also makes every installed copy update itself),
-   rename **Unreleased** in the changelog, update the README and this guide, merge `dev` into `main`, run
-   `tools/build-pages.sh` and push `gh-pages`.
+   rename **Unreleased** in the changelog, update the README and this guide, merge `dev` into `main`, push, and run
+   `tools/build-pages.sh`.
 4. Optionally create a GitHub Release with tag `vX.Y.Z-alpha`.
 
 ## Files in this repository
