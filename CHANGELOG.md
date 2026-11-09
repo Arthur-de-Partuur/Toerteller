@@ -10,6 +10,10 @@ published (see [How-To → Publishing a new version](docs/HOW-TO.md#publishing-a
   few minutes (default 5) and doesn't count the minutes after the signal. All of this can be set in Settings.
 * Android: install tip on the home screen (with Chrome's own *Install* button when offered) and Android steps in the
   How-To and README.
+* **Automatic updates.** The app checks for a new version when it starts, when you return to it and every 30 minutes,
+  installs it in the background and restarts itself at a quiet moment (never while the row timer runs). Settings →
+  Updates: switch automatic updating off (you then get a *tap to refresh* message), see the version and **Check for a
+  new version now**. After an update the app says *Updated to version …*.
 * "1 toer / 1 row" instead of "1 toeren / 1 rows".
 * Footer shows *development build, not yet published* until a version is published.
 

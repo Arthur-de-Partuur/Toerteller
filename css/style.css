@@ -168,6 +168,9 @@ body.idle-alert .idle-banner { animation: idle-flash 1s ease-in-out infinite; }
 .check-row[hidden], #idle-details[hidden] { display: none; }
 select { font: inherit; color: var(--text); background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; }
 
+#update-status:empty { display: none; }
+.update-line { margin: 12px 0 10px; }
+
 /* toast */
 .toast {
   position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom) + 20px);

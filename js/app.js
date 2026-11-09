@@ -352,6 +352,9 @@
     $('#set-idle-sound').checked = !!st.idleSound;
     $('#set-idle-vibrate').checked = !!st.idleVibrate;
     $('#idle-details').hidden = !st.idleRemind;
+    $('#set-autoupdate').checked = !!st.autoUpdate;
+    $('#update-version').textContent = 'v' + self.TT_VERSION.version;
+    $('#update-status').textContent = '';
     $('#last-backup').textContent = S.state.lastBackup ? t('lastBackup', { date: fmtDate(S.state.lastBackup) }) : t('neverBackup');
     show('view-settings');
   }
@@ -417,6 +420,8 @@
   $$('#set-lang button').forEach(b => b.onclick = () => { S.state.settings.lang = b.dataset.value; S.save(); applyLanguage(); openSettings(); });
   $$('#set-theme button').forEach(b => b.onclick = () => { S.state.settings.theme = b.dataset.value; S.save(); applyTheme(); openSettings(); });
   $('#set-wake').onchange = (e) => { S.state.settings.wake = e.target.checked; S.save(); };
+  $('#set-autoupdate').onchange = (e) => { S.state.settings.autoUpdate = e.target.checked; S.save(); };
+  $('#btn-check-update').onclick = () => manualCheck();
   $('#set-idle-remind').onchange = (e) => { S.state.settings.idleRemind = +e.target.value; S.save(); openSettings(); };
   $('#set-idle-pause').onchange = (e) => { S.state.settings.idlePause = +e.target.value; S.save(); };
   [['#set-idle-flash', 'idleFlash'], ['#set-idle-sound', 'idleSound'], ['#set-idle-vibrate', 'idleVibrate']].forEach(([sel, key]) => {
@@ -438,16 +443,46 @@
   window.addEventListener('pagehide', pauseAll);
 
   // ---------- offline / updates ----------
-  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-    navigator.serviceWorker.register('sw.js').then(reg => {
-      reg.addEventListener('updatefound', () => {
-        const nw = reg.installing;
-        nw && nw.addEventListener('statechange', () => {
-          if (nw.state === 'installed' && navigator.serviceWorker.controller) toast(t('updateReady'), () => { pauseAll(); location.reload(); });
-        });
-      });
-    }).catch(() => {});
+  // Checks on start, whenever the app comes back to the front, and every 30 minutes.
+  // A new version installs in the background; the app reloads itself at a quiet moment
+  // (not while the row timer is running in the counter screen). Projects are never touched.
+  let swReg = null, updatePending = false;
+  const UPDATE_EVERY_MS = 30 * 60000;
+  function quietMoment() { const p = currentId && S.find(currentId); return !(p && p.timer.running); }
+  function applyUpdate() {
+    if (!updatePending) return;
+    if (S.state.settings.autoUpdate && quietMoment()) { pauseAll(); location.reload(); return; }
+    toast(t('updateReady'), () => { pauseAll(); location.reload(); });
   }
+  function checkForUpdate() { if (swReg) return swReg.update().catch(() => {}); return Promise.resolve(); }
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+    const hadController = !!navigator.serviceWorker.controller;
+    navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(reg => {
+      swReg = reg;
+      setInterval(() => { if (!document.hidden) checkForUpdate(); }, UPDATE_EVERY_MS);
+    }).catch(() => {});
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!hadController) return;           // first install, nothing to update
+      updatePending = true; applyUpdate();
+    });
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) { checkForUpdate(); if (updatePending) applyUpdate(); } });
+    window.addEventListener('hashchange', () => { if (updatePending) setTimeout(applyUpdate, 50); });
+  }
+
+  async function manualCheck() {
+    const el = $('#update-status'); el.textContent = t('checking');
+    if (!swReg) { el.textContent = t('upToDate', { v: self.TT_VERSION.version }); return; }
+    await checkForUpdate();
+    if (swReg.installing || swReg.waiting || updatePending) { el.textContent = t('updateFound'); setTimeout(() => { updatePending = true; pauseAll(); location.reload(); }, 1500); }
+    else el.textContent = t('upToDate', { v: self.TT_VERSION.version });
+  }
+
+  // Tell the user once after an update.
+  try {
+    const seen = localStorage.getItem('toerteller.version');
+    if (seen && seen !== self.TT_VERSION.version) setTimeout(() => toast(t('updated', { v: self.TT_VERSION.version })), 400);
+    localStorage.setItem('toerteller.version', self.TT_VERSION.version);
+  } catch (e) { /* ignore */ }
 
   // ---------- start ----------
   applyTheme();

@@ -176,6 +176,17 @@
       </div>
 
       <div class="card">
+        <h2 data-i18n="updates"></h2>
+        <label class="switch-row">
+          <span><strong data-i18n="autoUpdate"></strong><small data-i18n="autoUpdateHelp"></small></span>
+          <input type="checkbox" id="set-autoupdate" class="switch">
+        </label>
+        <p class="muted update-line"><span data-i18n="thisVersion"></span> <b id="update-version"></b></p>
+        <button class="btn btn-ghost btn-block" id="btn-check-update" data-i18n="checkNow"></button>
+        <p class="muted" id="update-status" role="status"></p>
+      </div>
+
+      <div class="card">
         <h2 data-i18n="help"></h2>
         <p><a href="https://github.com/Arthur-de-Partuur/Toerteller/blob/main/docs/HOW-TO.md" target="_blank" rel="noopener" data-i18n="howTo"></a></p>
       </div>

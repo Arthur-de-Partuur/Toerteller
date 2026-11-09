@@ -88,8 +88,15 @@ Projects are stored only on this phone, inside the app.
 
 ## Updates
 
-When a new version is online, the app shows *New version ready. Tap to refresh.* Your projects are kept. The version
-number is in the footer.
+Toerteller updates itself. It checks for a new version when it starts, when you come back to it and every 30
+minutes. A new version is installed in the background, and the app restarts itself at a quiet moment: never while the
+row timer is running in the counter screen (it waits until you pause or go back to the project list). Afterwards it
+shows *Updated to version …*. Your projects are kept.
+
+Settings → **Updates**:
+* **Update automatically**: switch off if you'd rather decide yourself; you then get *New version ready. Tap to
+  refresh.*
+* **Check for a new version now**, and the version you have.
 
 ## Giving someone access
 

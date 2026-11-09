@@ -4,7 +4,7 @@
 //   format: 'toerteller', schema: 1,
 //   settings: { lang: 'auto'|'nl'|'en', theme: 'auto'|'light'|'dark', wake: bool,
 //               idleRemind: minutes (0 = off), idlePause: minutes after the reminder (0 = never),
-//               idleFlash, idleSound, idleVibrate: bool },
+//               idleFlash, idleSound, idleVibrate: bool, autoUpdate: bool },
 //   lastBackup: ISO date | null,
 //   projects: [{
 //     id, name, created, updated,          // ISO dates
@@ -21,7 +21,7 @@
   const LOG_MAX = 5000;
 
   function empty() {
-    return { format: 'toerteller', schema: 1, settings: { lang: 'auto', theme: 'auto', wake: true, idleRemind: 5, idlePause: 5, idleFlash: true, idleSound: true, idleVibrate: true }, lastBackup: null, projects: [] };
+    return { format: 'toerteller', schema: 1, settings: { lang: 'auto', theme: 'auto', wake: true, idleRemind: 5, idlePause: 5, idleFlash: true, idleSound: true, idleVibrate: true, autoUpdate: true }, lastBackup: null, projects: [] };
   }
 
   function sanitizeProject(p) {
