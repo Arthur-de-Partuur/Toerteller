@@ -119,7 +119,10 @@ Gear icon on the home screen.
 * **Language**: *Follow system (phone)* uses the phone's language (languages the app does not have get English), or choose one yourself: Dansk, Deutsch, English, Nederlands, Norsk or Svenska (alphabetical). Part names you already created keep the name they were given.
 * **Colours**: Automatic (follows the iPhone's dark mode), Light or Dark.
 * **Keep screen on**: the screen doesn't switch off while a project is open (needs iOS 16.4 or newer).
-* **Still knitting?**: *Signal after* (Off, 2–30 min), *Then pause after* (Never, 1–15 min), and which signals:
+* **Keep track of time**: switch off if the clock is stressful. You are asked first; then the row timer, all
+  times, the statistics and the *Still knitting?* reminder disappear and you only count rows. Times measured earlier
+  are kept and come back when you switch it on again.
+* **Still knitting?** (only when time is kept): *Signal after* (Off, 2–30 min), *Then pause after* (Never, 1–15 min), and which signals:
   Flash, Sound, Vibrate (Vibrate is only shown on phones that support it).
 
 ## Backup and moving to a new phone
