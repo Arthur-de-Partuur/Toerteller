@@ -266,6 +266,7 @@
     $('#btn-timer').classList.toggle('is-paused', !x.timer.running);
     $('#btn-plus').classList.toggle('is-done', x.done);
     $('#btn-finish').textContent = x.done ? t('reopen') : t('finishBtn');
+    $('#p-stats-box').open = S.state.settings.statsOpen !== false;
     renderClock();
     renderStats();
   }
@@ -768,6 +769,7 @@
   $('#edit-form').addEventListener('submit', saveEdit);
   $('#btn-delete').onclick = deletePart;
   $('#btn-copy-part').onclick = copyPart;
+  $('#p-stats-box').addEventListener('toggle', (e) => { if (S.state.settings.statsOpen !== e.target.open) { S.state.settings.statsOpen = e.target.open; S.save(); } });
   $('#p-notes').addEventListener('input', (e) => { const x = cp(); if (x) { x.notes = e.target.value; S.touch(cproj()); } });
   $('#btn-export').onclick = doExport;
   $('#file-import').addEventListener('change', doImport);

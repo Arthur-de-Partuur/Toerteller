@@ -11,7 +11,7 @@ self.TT_TEXT.de = {
   partDone: 'Dieses Teil ist fertig', copyPart: 'Kopie erstellen (z. B. für den zweiten Ärmel)', deletePart: 'Teil löschen',
   partsDone: '{d}/{n} Teile fertig', finished: 'fertig', moveUp: 'Nach oben', moveDown: 'Nach unten',
   statProject: 'Ganzes Projekt',
-  finishBtn: '✓ Teil fertig', reopen: '↺ Doch nicht fertig', reopened: '„{name}“ ist wieder offen',
+  finishBtn: '✓ Teil fertig?', statsTitle: 'Zeit und Statistik', reopen: '↺ Doch nicht fertig', reopened: '„{name}“ ist wieder offen',
   rowsMissing: 'Noch {n} von {of} Reihen', finishAnyway: 'Trotzdem fertig? Weiter mit:', keepKnitting: 'Nein, ich stricke noch etwas weiter',
   finishPartTitle: '„{name}“ fertig?',
   targetReachedTitle: '🎉 {n} Reihen erreicht', targetReachedMsg: 'Ist „{name}“ fertig?',
