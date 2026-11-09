@@ -22,9 +22,20 @@
     if (vars) Object.keys(vars).forEach(k => { s = s.split('{' + k + '}').join(vars[k]); });
     return s;
   }
+  // Device language -> app language (Norwegian Bokmal/Nynorsk = 'no'); anything else falls back to English.
+  function detectLang() {
+    const list = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || 'en'];
+    for (const l of list) {
+      let c = String(l).toLowerCase().slice(0, 2);
+      if (c === 'nb' || c === 'nn') c = 'no';
+      if (self.TT_TEXT[c]) return c;
+    }
+    return 'en';
+  }
+  const LOCALES = { nl: 'nl-NL', en: 'en-GB', da: 'da-DK', de: 'de-DE', no: 'nb-NO', sv: 'sv-SE' };
   function applyLanguage() {
     const pref = S.state.settings.lang;
-    lang = pref === 'auto' ? ((navigator.language || 'nl').toLowerCase().startsWith('nl') ? 'nl' : 'en') : pref;
+    lang = pref === 'auto' ? detectLang() : (self.TT_TEXT[pref] ? pref : 'en');
     document.documentElement.lang = lang;
     $$('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
     $$('[data-i18n-placeholder]').forEach(el => { el.placeholder = t(el.dataset.i18nPlaceholder); });
@@ -58,11 +69,11 @@
     const s = Math.round(ms / 1000);
     if (s < 60) return s + ' s';
     const h = Math.floor(s / 3600), m = Math.round((s % 3600) / 60);
-    const hu = lang === 'nl' ? 'u' : 'h';
+    const hu = ({ nl: 'u', da: 't', no: 't' })[lang] || 'h';
     return h ? h + ' ' + hu + ' ' + m + ' min' : m + ' min';
   }
   function fmtDate(iso) {
-    try { return new Date(iso).toLocaleString(lang === 'nl' ? 'nl-NL' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short' }); } catch (e) { return iso; }
+    try { return new Date(iso).toLocaleString(LOCALES[lang] || 'en-GB', { dateStyle: 'medium', timeStyle: 'short' }); } catch (e) { return iso; }
   }
 
   // ---------- timer (per part) ----------
@@ -512,7 +523,7 @@
   // Settings
   function openSettings() {
     const st = S.state.settings;
-    $$('#set-lang button').forEach(b => b.classList.toggle('active', b.dataset.value === st.lang));
+    $('#set-lang').value = st.lang;
     $$('#set-theme button').forEach(b => b.classList.toggle('active', b.dataset.value === st.theme));
     $('#set-wake').checked = !!st.wake;
     $('#set-idle-remind').value = String(st.idleRemind);
@@ -760,7 +771,7 @@
   $('#p-notes').addEventListener('input', (e) => { const x = cp(); if (x) { x.notes = e.target.value; S.touch(cproj()); } });
   $('#btn-export').onclick = doExport;
   $('#file-import').addEventListener('change', doImport);
-  $$('#set-lang button').forEach(b => b.onclick = () => { S.state.settings.lang = b.dataset.value; S.save(); applyLanguage(); openSettings(); });
+  $('#set-lang').onchange = (e) => { S.state.settings.lang = e.target.value; S.save(); applyLanguage(); openSettings(); };
   // (part names are stored as typed; changing the language later doesn't rename them)
   $$('#set-theme button').forEach(b => b.onclick = () => { S.state.settings.theme = b.dataset.value; S.save(); applyTheme(); openSettings(); });
   $('#set-wake').onchange = (e) => { S.state.settings.wake = e.target.checked; S.save(); };

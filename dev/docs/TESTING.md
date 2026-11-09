@@ -28,3 +28,4 @@ publishing. Mark ✅ (works), ❌ (problem, describe it) or – (not tested yet)
 | 20 | *Undo* after deleting brings it back | – | – |
 | 22 | *✓ Part finished* before the goal shows the warning with the joke; after the goal it just asks which part is next | – | – |
 | 21 | Reaching the number of rows shows *Is … finished?*; choosing the next part opens it; *Add rows* asks for a number | – | – |
+| 23 | Settings → Language: pick Dansk, Deutsch, Norsk, Svenska; texts and new project parts change; *Automatic* follows the phone language | – | – |
