@@ -23,3 +23,6 @@ publishing. Mark ✅ (works), ❌ (problem, describe it) or – (not tested yet)
 | 15 | Dark mode follows the phone setting (Automatic) | – | – |
 | 16 | Install tip shows in the browser and disappears once installed | – | – |
 | 17 | Dutch/English follows the phone language (Automatic) | – | – |
+| 18 | Swipe left on a project/part shows **Delete**; normal scrolling still works | – | – |
+| 19 | Long-press on a project/part opens the menu (no text selection popup) | – | – |
+| 20 | *Undo* after deleting brings it back | – | – |
